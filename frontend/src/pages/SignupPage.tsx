@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../components/global/card.css";
+import "../components/global/layout.css";
 
 export default function RegisterPage() {
   const navigate = useNavigate();
