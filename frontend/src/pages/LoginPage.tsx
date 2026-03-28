@@ -35,6 +35,12 @@ export default function LoginPage() {
 
     if (data.token) {
       localStorage.setItem("token", data.token);
+      localStorage.setItem("userName", data.user?.name || "Welcome back");
+
+      if (data.user?.organization_id) {
+        localStorage.setItem("organization_id", data.user.organization_id);
+      }
+
       navigate("/dashboard");
     } else {
       alert(data.message || "Login failed");

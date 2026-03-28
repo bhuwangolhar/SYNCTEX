@@ -52,6 +52,12 @@ export default function RegisterPage() {
     const data = await res.json();
 
     localStorage.setItem("token", data.token);
+    localStorage.setItem("userName", form.name);
+    localStorage.setItem("orgName", form.organizationName);
+
+    if (data.user?.organization_id) {
+      localStorage.setItem("organization_id", data.user.organization_id);
+    }
 
     navigate("/dashboard");
   };

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import TeamTasksPage from "./Tasks/TeamTasks";
 
 const NAV_ITEMS = [
   { icon: "⊞", label: "Dashboard", id: "dashboard" },
@@ -40,6 +41,11 @@ export default function DashboardPage() {
 
   const orgName = localStorage.getItem("orgName") || "Your Organization";
   const userName = localStorage.getItem("userName") || "Welcome back";
+  const isTeamView = activeNav === "team";
+  const pageTitle = isTeamView ? "Team Tasks" : "Dashboard";
+  const pageSubtitle = isTeamView
+    ? "Manage your team's work, priorities, and deadlines"
+    : "Saturday, March 14, 2026";
 
   return (
     <div style={s.root}>
@@ -110,8 +116,8 @@ export default function DashboardPage() {
         {/* TOP BAR */}
         <header style={s.topbar}>
           <div>
-            <h1 style={s.pageTitle}>Dashboard</h1>
-            <p style={s.pageSubtitle}>Saturday, March 14, 2026</p>
+            <h1 style={s.pageTitle}>{pageTitle}</h1>
+            <p style={s.pageSubtitle}>{pageSubtitle}</p>
           </div>
           <div style={s.topbarRight}>
             <div style={s.searchBox}>
@@ -127,6 +133,10 @@ export default function DashboardPage() {
         </header>
 
         <div style={s.content}>
+          {isTeamView ? (
+            <TeamTasksPage />
+          ) : (
+            <>
 
           {/* WELCOME BANNER */}
           <div style={s.welcomeBanner}>
@@ -271,7 +281,8 @@ export default function DashboardPage() {
               </tbody>
             </table>
           </div>
-
+            </>
+          )}
         </div>
       </main>
     </div>

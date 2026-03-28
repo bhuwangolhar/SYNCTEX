@@ -1,0 +1,188 @@
+.team-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.team-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.team-header h2 {
+  margin: 0;
+  font-family: "Syne", sans-serif;
+  font-size: 28px;
+  color: #1e293b;
+}
+
+.team-header button {
+  background: linear-gradient(90deg,#3b82f6,#7c3aed);
+  color: white;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.team-header button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.team-info,
+.team-error {
+  padding: 16px 18px;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+.team-info {
+  color: #475569;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+}
+
+.team-error {
+  color: #b91c1c;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+}
+
+.task-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
+}
+
+.task-table thead {
+  background: #f8fafc;
+}
+
+.task-table th,
+.task-table td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+}
+
+.task-table th {
+  font-size: 12px;
+  color: #64748b;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.badge {
+  padding: 4px 8px;
+  border-radius: 6px;
+  color: white;
+  font-size: 12px;
+}
+
+.green { background: green; }
+.orange { background: orange; }
+.red { background: red; }
+.blue { background: blue; }
+.gray { background: gray; }
+
+.delete-btn {
+  background: red;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.4);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.modal {
+  background:white;
+  padding:20px;
+  border-radius:10px;
+  width:300px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modal input,
+.modal textarea,
+.modal select,
+.modal button {
+  width: 100%;
+}
+
+.modal input,
+.modal textarea,
+.modal select {
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font: inherit;
+}
+
+.modal textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.modal button {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.modal button:first-of-type {
+  background: linear-gradient(90deg,#3b82f6,#7c3aed);
+  color: white;
+}
+
+.modal button:last-of-type {
+  background: #e2e8f0;
+  color: #1e293b;
+}
+
+.modal button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.form-error {
+  margin: 0;
+  color: #b91c1c;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.empty {
+  text-align: center;
+  color: #64748b;
+  padding: 40px 24px;
+  background: white;
+  border: 1px dashed #cbd5e1;
+  border-radius: 16px;
+}
