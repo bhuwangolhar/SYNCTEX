@@ -1,9 +1,11 @@
 import { useState } from "react";
 import TeamTasksPage from "./Tasks/TeamTasks";
+import EnquiryPage from "./Sales/EnquiryPage";
 
 const NAV_ITEMS = [
   { icon: "⊞", label: "Dashboard", id: "dashboard" },
   { icon: "👥", label: "Team", id: "team" },
+  { icon: "E", label: "Enquiry", id: "enquiry" },
   { icon: "📋", label: "Projects", id: "projects" },
   { icon: "📊", label: "Analytics", id: "analytics" },
   { icon: "🔗", label: "Integrations", id: "integrations" },
@@ -42,10 +44,17 @@ export default function DashboardPage() {
   const orgName = localStorage.getItem("orgName") || "Your Organization";
   const userName = localStorage.getItem("userName") || "Welcome back";
   const isTeamView = activeNav === "team";
-  const pageTitle = isTeamView ? "Team Tasks" : "Dashboard";
+  const isEnquiryView = activeNav === "enquiry";
+  const pageTitle = isTeamView
+    ? "Team Tasks"
+    : isEnquiryView
+      ? "Enquiries"
+      : "Dashboard";
   const pageSubtitle = isTeamView
     ? "Manage your team's work, priorities, and deadlines"
-    : "Saturday, March 14, 2026";
+    : isEnquiryView
+      ? "Track incoming leads, conversations, and follow-ups"
+      : "Saturday, March 14, 2026";
 
   return (
     <div style={s.root}>
@@ -135,6 +144,8 @@ export default function DashboardPage() {
         <div style={s.content}>
           {isTeamView ? (
             <TeamTasksPage />
+          ) : isEnquiryView ? (
+            <EnquiryPage />
           ) : (
             <>
 

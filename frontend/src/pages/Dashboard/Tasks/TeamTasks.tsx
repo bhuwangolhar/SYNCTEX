@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { getStoredOrganizationId, getTasks } from "../../../services/task.service";
+import { getTasks } from "../../../services/task.service";
+import { getStoredOrganizationId } from "../../../services/session.service";
 import TaskTable from "./components/TaskTable";
 import TaskFormModal from "./Modal/TaskFormModal";
 import "../../../components/global/Task/team.css";

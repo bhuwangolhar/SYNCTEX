@@ -1,24 +1,16 @@
-const BASE = "http://localhost:5000/api/tasks";
-
-type TaskPayload = {
-  title: string;
-  description?: string;
-  priority?: "LOW" | "MEDIUM" | "HIGH";
-  status?: "TODO" | "IN_PROGRESS" | "DONE";
-  organization_id: string;
-};
+const BASE = "http://localhost:5000/api/enquiries";
 
 const parseResponse = async (res: Response) => {
   const data = await res.json().catch(() => null);
 
   if (!res.ok) {
-    throw new Error(data?.message || "Task request failed");
+    throw new Error(data?.message || "Enquiry request failed");
   }
 
   return data;
 };
 
-export const getTasks = async (orgId: string) => {
+export const getEnquiries = async (orgId: string) => {
   if (!orgId) {
     return [];
   }
@@ -29,7 +21,7 @@ export const getTasks = async (orgId: string) => {
   return Array.isArray(data) ? data : [];
 };
 
-export const createTask = async (data: TaskPayload) => {
+export const createEnquiry = async (data: any) => {
   if (!data.organization_id) {
     throw new Error("Organization not found. Please log in again.");
   }
@@ -43,7 +35,7 @@ export const createTask = async (data: TaskPayload) => {
   return parseResponse(res);
 };
 
-export const updateTask = async (id: string, data: Partial<TaskPayload>) => {
+export const updateEnquiry = async (id: string, data: any) => {
   const res = await fetch(`${BASE}/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
@@ -53,7 +45,7 @@ export const updateTask = async (id: string, data: Partial<TaskPayload>) => {
   return parseResponse(res);
 };
 
-export const deleteTask = async (id: string) => {
+export const deleteEnquiry = async (id: string) => {
   const res = await fetch(`${BASE}/${id}`, { method: "DELETE" });
   return parseResponse(res);
 };
