@@ -1,15 +1,18 @@
+// auth controller
+
 const authService = require("../services/auth.service");
 
 exports.register = async (req, res) => {
   try {
 
-    const { name, email, password, organizationName } = req.body;
+    const { name, email, password, organizationName, mobile } = req.body;
 
     const result = await authService.register({
       name,
       email,
       password,
-      organizationName
+      organizationName,
+      mobile
     });
 
     res.status(201).json(result);

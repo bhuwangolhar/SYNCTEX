@@ -1,10 +1,23 @@
+// Dashboard Page
+
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import TeamTasksPage from "./Tasks/TeamTasks";
+import TeamMembers from "./Team/Members";
 import EnquiryPage from "./Sales/EnquiryPage";
+import Attendance from "./Attendance/Attendance";
+import Branches from "./Branches/Branches";
+import Courses from "./Courses/Courses";
+import Settings from "./Settings/Settings";
+import { getStoredUserRole } from "../../services/session.service";
 
 const NAV_ITEMS = [
   { icon: "⊞", label: "Dashboard", id: "dashboard" },
   { icon: "👥", label: "Team", id: "team" },
+  { icon: "T", label: "Tasks", id: "tasks" },
+  { icon: "⏱", label: "Attendance", id: "attendance" },
+  { icon: "🏢", label: "Branches", id: "branches" },
+  { icon: "📚", label: "Courses", id: "courses" },
   { icon: "E", label: "Enquiry", id: "enquiry" },
   { icon: "📋", label: "Projects", id: "projects" },
   { icon: "📊", label: "Analytics", id: "analytics" },
@@ -38,23 +51,62 @@ const CHART_DATA = [40, 65, 50, 80, 72, 90, 68, 95, 78, 88, 74, 92];
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 export default function DashboardPage() {
+  const navigate = useNavigate();
   const [activeNav, setActiveNav] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const orgName = localStorage.getItem("orgName") || "Your Organization";
-  const userName = localStorage.getItem("userName") || "Welcome back";
+  const storedUserName = localStorage.getItem("userName")?.trim() || "";
+  const userName = storedUserName || "Welcome back";
+  const userDisplayName = storedUserName || "User";
+  const userRole = getStoredUserRole() || "Member";
+  const userInitial = userDisplayName.charAt(0).toUpperCase();
   const isTeamView = activeNav === "team";
+  const isTasksView = activeNav === "tasks";
+  const isAttendanceView = activeNav === "attendance";
+  const isBranchesView = activeNav === "branches";
+  const isCoursesView = activeNav === "courses";
   const isEnquiryView = activeNav === "enquiry";
+  const isSettingsView = activeNav === "settings";
   const pageTitle = isTeamView
-    ? "Team Tasks"
+    ? "Team Members"
+    : isTasksView
+      ? "Team Tasks"
+    : isAttendanceView
+      ? "Attendance"
+    : isBranchesView
+      ? "Branches"
+    : isCoursesView
+      ? "Courses"
     : isEnquiryView
       ? "Enquiries"
+    : isSettingsView
+      ? "Settings"
       : "Dashboard";
   const pageSubtitle = isTeamView
-    ? "Manage your team's work, priorities, and deadlines"
+    ? "Invite employees, share credentials, and manage organization access"
+    : isTasksView
+      ? "Manage your team's work, priorities, and deadlines"
+    : isAttendanceView
+      ? "Punch in/out and track today’s sessions in one place"
+    : isBranchesView
+      ? "Manage your organization's branches and locations"
+    : isCoursesView
+      ? "Create, manage, and organize your training courses"
     : isEnquiryView
       ? "Track incoming leads, conversations, and follow-ups"
+    : isSettingsView
+      ? "Manage your organization's preferences and configurations"
       : "Saturday, March 14, 2026";
+
+  const handleSignOut = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("userName");
+    localStorage.removeItem("userRole");
+    localStorage.removeItem("organization_id");
+    localStorage.removeItem("orgName");
+    navigate("/login", { replace: true });
+  };
 
   return (
     <div style={s.root}>
@@ -108,14 +160,22 @@ export default function DashboardPage() {
 
         <div style={s.sidebarBottom}>
           <div style={s.userChip}>
-            <div style={s.userAvatar}>A</div>
+            <div style={s.userAvatar}>{userInitial}</div>
             {sidebarOpen && (
               <div style={s.userInfo}>
-                <div style={s.userName}>Admin</div>
+                <div style={s.userName}>{userDisplayName}</div>
+                <div style={s.userRole}>{userRole}</div>
                 <div style={s.userOrg}>{orgName.slice(0, 16)}</div>
               </div>
             )}
           </div>
+          <button
+            onClick={handleSignOut}
+            style={s.signOutBtn}
+            title="Sign out"
+          >
+            {sidebarOpen ? "Sign out" : "Out"}
+          </button>
         </div>
       </aside>
 
@@ -137,15 +197,25 @@ export default function DashboardPage() {
               🔔
               <span style={s.notifDot} />
             </button>
-            <div style={s.topAvatar}>A</div>
+            <div style={s.topAvatar}>{userInitial}</div>
           </div>
         </header>
 
         <div style={s.content}>
           {isTeamView ? (
+            <TeamMembers />
+          ) : isTasksView ? (
             <TeamTasksPage />
+          ) : isAttendanceView ? (
+            <Attendance />
+          ) : isBranchesView ? (
+            <Branches />
+          ) : isCoursesView ? (
+            <Courses />
           ) : isEnquiryView ? (
             <EnquiryPage />
+          ) : isSettingsView ? (
+            <Settings />
           ) : (
             <>
 
@@ -158,7 +228,9 @@ export default function DashboardPage() {
             </div>
             <div style={s.welcomeActions}>
               <button style={s.welcomeBtn}>+ New Project</button>
-              <button style={s.welcomeBtnOutline}>Invite Member</button>
+              <button style={s.welcomeBtnOutline} onClick={() => setActiveNav("team")}>
+                Invite Member
+              </button>
             </div>
             <div style={s.welcomeGlow} />
           </div>
@@ -319,7 +391,9 @@ const s: Record<string, React.CSSProperties> = {
   userAvatar: { width: 34, height: 34, borderRadius: "50%", background: "linear-gradient(135deg,#3b82f6,#7c3aed)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: 14, color: "#fff", flexShrink: 0 },
   userInfo: { overflow: "hidden" },
   userName: { fontWeight: 600, fontSize: 13, color: "#1e293b" },
+  userRole: { fontSize: 11, color: "#3b82f6", fontWeight: 600, marginTop: 1, textTransform: "capitalize" as const },
   userOrg: { fontSize: 11, color: "#64748b", marginTop: 1 },
+  signOutBtn: { width: "100%", marginTop: 12, background: "#fff5f5", color: "#dc2626", border: "1px solid #fecaca", borderRadius: 10, padding: "9px 12px", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "'DM Sans', sans-serif" },
 
   // MAIN
   main: { flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" },

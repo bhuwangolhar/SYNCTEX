@@ -1,8 +1,12 @@
-const { DataTypes } = require("sequelize");
-const sequelize = require("../../config/database");
+// user model
+
+'use strict';
+
+const { DataTypes } = require('sequelize');
+const sequelize = require('../../config/database');
 
 const User = sequelize.define(
-  "User",
+  'User',
   {
     id: {
       type: DataTypes.UUID,
@@ -31,13 +35,18 @@ const User = sequelize.define(
       allowNull: false
     },
 
+    mobile: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+
     role: {
-      type: DataTypes.ENUM("ADMIN", "EMPLOYEE"),
-      defaultValue: "EMPLOYEE"
+      type: DataTypes.ENUM('ADMIN', 'EMPLOYEE'),
+      defaultValue: 'EMPLOYEE'
     }
   },
   {
-    tableName: "users"
+    tableName: 'users'
   }
 );
 

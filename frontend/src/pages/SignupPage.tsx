@@ -1,85 +1,101 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import "../components/global/layout.css";
+// Signup Page
 
-export default function RegisterPage() {
+// frontend/src/pages/SignupPage.tsx
+// This page is for creating a NEW ORGANIZATION only.
+// Existing employees must be added by their admin from inside the dashboard.
+
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import '../components/global/layout.css';
+import { apiUrl, parseApiResponse } from '../services/api';
+
+export default function SignupPage() {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
-    name: "",
-    organizationName: "",
-    email: "",
-    phone: "",
-    password: "",
-    confirmPassword: ""
+    name: '',
+    organizationName: '',
+    email: '',
+    mobile: '',
+    password: '',
+    confirmPassword: ''
   });
 
   const [agreed, setAgreed] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleChange = (e: any) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value
-    });
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
 
     if (form.password !== form.confirmPassword) {
-      alert("Passwords do not match");
+      setError('Passwords do not match');
       return;
     }
 
     if (!agreed) {
-      alert("Please agree to the terms and conditions");
+      setError('Please agree to the terms and conditions');
       return;
     }
 
-    const res = await fetch("http://localhost:5000/api/auth/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        name: form.name,
-        email: form.email,
-        password: form.password,
-        organizationName: form.organizationName
-      })
-    });
+    try {
+      const res = await fetch(apiUrl('/auth/register'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          password: form.password,
+          organizationName: form.organizationName,
+          mobile: form.mobile
+        })
+      });
 
-    const data = await res.json();
+      const data = await parseApiResponse<any>(res, 'Registration failed');
 
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("userName", form.name);
-    localStorage.setItem("orgName", form.organizationName);
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('userName', data.user?.name || form.name);
+      localStorage.setItem('userRole', data.user?.role || 'ADMIN');
+      localStorage.setItem('orgName', data.user?.organization_name || form.organizationName);
+      // Keep organization_id in localStorage only for display, NOT for auth decisions
+      if (data.user?.organization_id) {
+        localStorage.setItem('organization_id', data.user.organization_id);
+      }
 
-    if (data.user?.organization_id) {
-      localStorage.setItem("organization_id", data.user.organization_id);
+      navigate('/dashboard');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Network error. Please try again.');
     }
-
-    navigate("/dashboard");
   };
 
   return (
     <div className="auth-container">
-
       <div className="auth-card">
-
         <h2 className="logo">SYNCTEX</h2>
-        <h1>Create new account</h1>
-        <p>Start managing your organization today</p>
+        <h1>Create your organization</h1>
+        <p>
+          Set up a new workspace. You'll become the admin and can add your
+          team from inside the dashboard.
+        </p>
+
+        {error && (
+          <div className="auth-error" style={{ color: '#ef4444', marginBottom: 12 }}>
+            {error}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="auth-form">
-
           <div className="form-grid">
-
             <div>
               <label>Full Name</label>
               <input
                 name="name"
-                placeholder="Enter your full name"
+                placeholder="Your full name"
+                required
                 onChange={handleChange}
               />
             </div>
@@ -88,7 +104,8 @@ export default function RegisterPage() {
               <label>Organization Name</label>
               <input
                 name="organizationName"
-                placeholder="Enter organization name"
+                placeholder="Your company or team name"
+                required
                 onChange={handleChange}
               />
             </div>
@@ -97,16 +114,19 @@ export default function RegisterPage() {
               <label>Email</label>
               <input
                 name="email"
-                placeholder="Enter email"
+                type="email"
+                placeholder="you@company.com"
+                required
                 onChange={handleChange}
               />
             </div>
 
             <div>
-              <label>Phone</label>
+              <label>Mobile</label>
               <input
-                name="phone"
-                placeholder="Enter phone"
+                name="mobile"
+                type="tel"
+                placeholder="+91 98765 43210"
                 onChange={handleChange}
               />
             </div>
@@ -116,7 +136,8 @@ export default function RegisterPage() {
               <input
                 type="password"
                 name="password"
-                placeholder="Enter password"
+                placeholder="Choose a password"
+                required
                 onChange={handleChange}
               />
             </div>
@@ -127,10 +148,10 @@ export default function RegisterPage() {
                 type="password"
                 name="confirmPassword"
                 placeholder="Re-enter password"
+                required
                 onChange={handleChange}
               />
             </div>
-
           </div>
 
           <div className="terms-row">
@@ -147,18 +168,20 @@ export default function RegisterPage() {
 
           <div className="submit-btn-wrapper">
             <button type="submit" className="submit-btn">
-              Sign up
+              Create organization
             </button>
           </div>
 
           <div className="signin-row">
-            Already have an Account? <a href="/login">Sign in</a>
+            Already have an account? <a href="/login">Sign in</a>
           </div>
 
+          <p style={{ fontSize: 12, color: '#64748b', textAlign: 'center', marginTop: 12 }}>
+            Are you an employee? Ask your admin to add you from the dashboard.
+            There is no self-signup for team members.
+          </p>
         </form>
-
       </div>
-
     </div>
   );
 }

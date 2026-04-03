@@ -1,59 +1,105 @@
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
+// auth service
 
-const User = require("../models/user.model");
-const Organization = require("../models/organization.model");
+'use strict';
 
-exports.register = async ({ name, email, password, organizationName }) => {
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
-  const existingUser = await User.findOne({ where: { email } });
+const User = require('../models/user.model');
+const Organization = require('../models/organization.model');
+const branchService = require('./branch.service');
+
+/**
+ * Creates a new organization and its first ADMIN user.
+ * This is the only public registration path.
+ */
+exports.register = async ({ name, email, password, organizationName, mobile }) => {
+  const cleanEmail = String(email || '').trim().toLowerCase();
+
+  if (!cleanEmail) {
+    throw new Error('Valid email is required');
+  }
+
+  const existingUser = await User.findOne({ where: { email: cleanEmail } });
 
   if (existingUser) {
-    throw new Error("User already exists");
+    throw new Error('User already exists');
+  }
+
+  if (!name || !password || !organizationName) {
+    throw new Error('name, email, password, and organizationName are required');
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  const organization = await Organization.create({
-    name: organizationName
-  });
+  const organization = await Organization.create({ name: organizationName });
 
   const user = await User.create({
     name,
-    email,
+    email: cleanEmail,
     password: hashedPassword,
-    role: "ADMIN",
-    organization_id: organization.id
+    role: 'ADMIN',
+    organization_id: organization.id,
+    mobile: mobile || null
   });
 
-  const token = jwt.sign(
-    { userId: user.id, organizationId: organization.id },
-    process.env.JWT_SECRET,
-    { expiresIn: "7d" }
-  );
+  try {
+    // ensure home branch exists for this organization and admin user
+    await branchService.createDefaultHomeBranch({
+      organizationId: organization.id,
+      createdBy: user.id,
+      ownerId: user.id,
+      orgName: organizationName,
+      email: cleanEmail,
+      phone: mobile || '+911234567890'
+    });
+  } catch (err) {
+    // ignore branch create errors; user signup should succeed
+    console.warn('Branch creation after registration failed:', err.message);
+  }
 
-  return { user, token };
+  const token = _signToken(user, organization.id);
+
+  return { user: _safeUser(user, organization.name), token };
 };
 
+/**
+ * Authenticates any user (ADMIN or EMPLOYEE).
+ */
 exports.login = async ({ email, password }) => {
+  const cleanEmail = String(email || '').trim().toLowerCase();
+  const user = await User.findOne({ where: { email: cleanEmail } });
 
-  const user = await User.findOne({ where: { email } });
+  if (!user) throw new Error('Invalid credentials');
 
-  if (!user) {
-    throw new Error("Invalid credentials");
-  }
+  const valid = await bcrypt.compare(password, user.password);
+  if (!valid) throw new Error('Invalid credentials');
 
-  const isPasswordValid = await bcrypt.compare(password, user.password);
+  const token = _signToken(user, user.organization_id);
+  const organization = await Organization.findByPk(user.organization_id);
 
-  if (!isPasswordValid) {
-    throw new Error("Invalid credentials");
-  }
-
-  const token = jwt.sign(
-    { userId: user.id, organizationId: user.organization_id },
-    process.env.JWT_SECRET,
-    { expiresIn: "7d" }
-  );
-
-  return { user, token };
+  return { user: _safeUser(user, organization?.name || ''), token };
 };
+
+// ── helpers ────────────────────────────────────────────────────────────────
+
+function _signToken(user, organizationId) {
+  return jwt.sign(
+    {
+      userId: user.id,
+      organizationId,
+      role: user.role          // include role so middleware can read it without a DB call
+    },
+    process.env.JWT_SECRET,
+    { expiresIn: '7d' }
+  );
+}
+
+function _safeUser(user, organizationName = '') {
+  // Never return the hashed password to the client
+  const { password, ...safe } = user.toJSON ? user.toJSON() : user;
+  return {
+    ...safe,
+    organization_name: organizationName
+  };
+}

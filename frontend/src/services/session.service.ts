@@ -37,3 +37,26 @@ export const getStoredOrganizationId = () => {
 
   return orgId;
 };
+
+export const getStoredUserRole = () => {
+  const savedRole = localStorage.getItem("userRole");
+
+  if (savedRole) {
+    return savedRole;
+  }
+
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    return "";
+  }
+
+  const payload = decodeTokenPayload(token);
+  const role = payload?.role || "";
+
+  if (role) {
+    localStorage.setItem("userRole", role);
+  }
+
+  return role;
+};

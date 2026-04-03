@@ -1,13 +1,14 @@
-const BASE = "http://localhost:5000/api/enquiries";
+import { apiUrl, parseApiResponse } from "./api";
 
-const parseResponse = async (res: Response) => {
-  const data = await res.json().catch(() => null);
+const BASE = apiUrl("/enquiries");
 
-  if (!res.ok) {
-    throw new Error(data?.message || "Enquiry request failed");
-  }
+const authHeaders = () => {
+  const token = localStorage.getItem("token");
 
-  return data;
+  return {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`
+  };
 };
 
 export const getEnquiries = async (orgId: string) => {
@@ -15,8 +16,10 @@ export const getEnquiries = async (orgId: string) => {
     return [];
   }
 
-  const res = await fetch(`${BASE}?organization_id=${orgId}`);
-  const data = await parseResponse(res);
+  const res = await fetch(`${BASE}?organization_id=${orgId}`, {
+    headers: authHeaders()
+  });
+  const data = await parseApiResponse<unknown>(res, "Enquiry request failed");
 
   return Array.isArray(data) ? data : [];
 };
@@ -28,24 +31,27 @@ export const createEnquiry = async (data: any) => {
 
   const res = await fetch(BASE, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: authHeaders(),
     body: JSON.stringify(data)
   });
 
-  return parseResponse(res);
+  return parseApiResponse(res, "Enquiry request failed");
 };
 
 export const updateEnquiry = async (id: string, data: any) => {
   const res = await fetch(`${BASE}/${id}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: authHeaders(),
     body: JSON.stringify(data)
   });
 
-  return parseResponse(res);
+  return parseApiResponse(res, "Enquiry request failed");
 };
 
 export const deleteEnquiry = async (id: string) => {
-  const res = await fetch(`${BASE}/${id}`, { method: "DELETE" });
-  return parseResponse(res);
+  const res = await fetch(`${BASE}/${id}`, {
+    method: "DELETE",
+    headers: authHeaders()
+  });
+  return parseApiResponse(res, "Enquiry request failed");
 };

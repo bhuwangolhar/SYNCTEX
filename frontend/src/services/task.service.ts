@@ -1,4 +1,6 @@
-const BASE = "http://localhost:5000/api/tasks";
+import { apiUrl, parseApiResponse } from "./api";
+
+const BASE = apiUrl("/tasks");
 
 type TaskPayload = {
   title: string;
@@ -8,14 +10,13 @@ type TaskPayload = {
   organization_id: string;
 };
 
-const parseResponse = async (res: Response) => {
-  const data = await res.json().catch(() => null);
+const authHeaders = () => {
+  const token = localStorage.getItem("token");
 
-  if (!res.ok) {
-    throw new Error(data?.message || "Task request failed");
-  }
-
-  return data;
+  return {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`
+  };
 };
 
 export const getTasks = async (orgId: string) => {
@@ -23,8 +24,10 @@ export const getTasks = async (orgId: string) => {
     return [];
   }
 
-  const res = await fetch(`${BASE}?organization_id=${orgId}`);
-  const data = await parseResponse(res);
+  const res = await fetch(`${BASE}?organization_id=${orgId}`, {
+    headers: authHeaders()
+  });
+  const data = await parseApiResponse<unknown>(res, "Task request failed");
 
   return Array.isArray(data) ? data : [];
 };
@@ -36,24 +39,27 @@ export const createTask = async (data: TaskPayload) => {
 
   const res = await fetch(BASE, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: authHeaders(),
     body: JSON.stringify(data)
   });
 
-  return parseResponse(res);
+  return parseApiResponse(res, "Task request failed");
 };
 
 export const updateTask = async (id: string, data: Partial<TaskPayload>) => {
   const res = await fetch(`${BASE}/${id}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: authHeaders(),
     body: JSON.stringify(data)
   });
 
-  return parseResponse(res);
+  return parseApiResponse(res, "Task request failed");
 };
 
 export const deleteTask = async (id: string) => {
-  const res = await fetch(`${BASE}/${id}`, { method: "DELETE" });
-  return parseResponse(res);
+  const res = await fetch(`${BASE}/${id}`, {
+    method: "DELETE",
+    headers: authHeaders()
+  });
+  return parseApiResponse(res, "Task request failed");
 };

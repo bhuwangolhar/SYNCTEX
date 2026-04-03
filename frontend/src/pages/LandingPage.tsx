@@ -1,3 +1,5 @@
+// Landing Page
+
 import { useState, useEffect, useRef } from "react";
 
 const NAV_LINKS = ["Features", "Solutions", "Integrations", "Pricing"];
