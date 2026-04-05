@@ -14,7 +14,11 @@ const enquiryRoutes = require('./routes/enquiry.routes');
 const userRoutes = require('./routes/user.routes');
 const attendanceRoutes = require('./routes/attendance.routes');
 const branchRoutes = require('./routes/branch.routes');
+const employeeRoutes = require('./routes/employee.routes');
 const courseRoutes = require('./routes/course.routes');
+const departmentRoutes = require('./routes/department.routes');
+const roleRoutes = require('./routes/role.routes');
+const organizationRoutes = require('./routes/organization.routes');
 
 const app = express();
 
@@ -27,7 +31,11 @@ app.use('/api/enquiries', enquiryRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/attendance', attendanceRoutes);
 app.use('/api/branches', branchRoutes);
+app.use('/api/employees', employeeRoutes);
 app.use('/api/courses', courseRoutes);
+app.use('/api/departments', departmentRoutes);
+app.use('/api/roles', roleRoutes);
+app.use('/api/organizations', organizationRoutes);
 
 app.get('/', (req, res) => {
   res.send('SYNCTEX API running');

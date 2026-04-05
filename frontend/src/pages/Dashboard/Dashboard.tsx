@@ -1,28 +1,28 @@
 // Dashboard Page
 
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation, Routes, Route, Navigate } from "react-router-dom";
+import DashboardHome from "./DashboardHome";
 import TeamTasksPage from "./Tasks/TeamTasks";
-import TeamMembers from "./Team/Members";
 import EnquiryPage from "./Sales/EnquiryPage";
 import Attendance from "./Attendance/Attendance";
 import Branches from "./Branches/Branches";
 import Courses from "./Courses/Courses";
 import Settings from "./Settings/Settings";
+import AccessControl from "./AccessControl";
+import EmployeesPage from "./HR/Employees";
 import { getStoredUserRole } from "../../services/session.service";
+import { useOrganization } from "../../hooks/useOrganization";
 
 const NAV_ITEMS = [
-  { icon: "⊞", label: "Dashboard", id: "dashboard" },
-  { icon: "👥", label: "Team", id: "team" },
-  { icon: "T", label: "Tasks", id: "tasks" },
-  { icon: "⏱", label: "Attendance", id: "attendance" },
-  { icon: "🏢", label: "Branches", id: "branches" },
-  { icon: "📚", label: "Courses", id: "courses" },
-  { icon: "E", label: "Enquiry", id: "enquiry" },
-  { icon: "📋", label: "Projects", id: "projects" },
-  { icon: "📊", label: "Analytics", id: "analytics" },
-  { icon: "🔗", label: "Integrations", id: "integrations" },
-  { icon: "⚙️", label: "Settings", id: "settings" },
+  { icon: "⊞", label: "Dashboard", id: "dashboard", path: "/dashboard" },
+  { icon: "✓", label: "Tasks", id: "tasks", path: "/dashboard/tasks" },
+  { icon: "⏱", label: "Attendance", id: "attendance", path: "/dashboard/attendance" },
+  { icon: "🏢", label: "Branches", id: "branches", path: "/dashboard/branches" },
+  { icon: "📋", label: "HR", id: "hr", path: "/dashboard/hr" },
+  { icon: "📚", label: "Courses", id: "courses", path: "/dashboard/courses" },
+  { icon: "💬", label: "Enquiry", id: "enquiry", path: "/dashboard/enquiry" },
+  { icon: "⚙️", label: "Settings", id: "settings", path: "/dashboard/settings" },
 ];
 
 const STATS = [
@@ -32,13 +32,7 @@ const STATS = [
   { label: "Pending Reviews", value: "17", change: "-4 since yesterday", up: false, color: "#f59e0b" },
 ];
 
-const RECENT_ACTIVITY = [
-  { user: "Rahul M.", action: "completed task", target: "Q1 Report Design", time: "2m ago", avatar: "R" },
-  { user: "Priya N.", action: "added member", target: "Engineering Team", time: "18m ago", avatar: "P" },
-  { user: "Amit D.", action: "created project", target: "Product Launch v2", time: "1h ago", avatar: "A" },
-  { user: "Sara K.", action: "submitted review", target: "Marketing Deck", time: "3h ago", avatar: "S" },
-  { user: "Dev T.", action: "updated settings", target: "Billing & Plans", time: "5h ago", avatar: "D" },
-];
+const RECENT_ACTIVITY = [];
 
 const PROJECTS = [
   { name: "Product Launch v2", progress: 72, members: 8, due: "Mar 28", status: "On Track", color: "#3b82f6" },
@@ -52,52 +46,82 @@ const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "
 
 export default function DashboardPage() {
   const navigate = useNavigate();
-  const [activeNav, setActiveNav] = useState("dashboard");
+  const location = useLocation();
+  const { organization, refreshOrganization } = useOrganization();
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [currentTime, setCurrentTime] = useState(new Date());
 
-  const orgName = localStorage.getItem("orgName") || "Your Organization";
+  // Refresh organization data on mount
+  useEffect(() => {
+    const orgId = localStorage.getItem('organization_id');
+    if (orgId) {
+      refreshOrganization(orgId);
+    }
+  }, [refreshOrganization]);
+
+  // Real-time clock
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const formatTimeIST = (date: Date) => {
+    return date.toLocaleString("en-IN", { 
+      timeZone: "Asia/Kolkata",
+      dateStyle: "medium",
+      timeStyle: "medium"
+    });
+  };
+
+  // Determine active nav from current path
+  const currentPath = location.pathname;
+  const activeNav = NAV_ITEMS.find(item => item.path === currentPath)?.id || "dashboard";
+
+  const orgName = organization?.name || localStorage.getItem("orgName") || "Your Organization";
   const storedUserName = localStorage.getItem("userName")?.trim() || "";
   const userName = storedUserName || "Welcome back";
   const userDisplayName = storedUserName || "User";
   const userRole = getStoredUserRole() || "Member";
   const userInitial = userDisplayName.charAt(0).toUpperCase();
-  const isTeamView = activeNav === "team";
   const isTasksView = activeNav === "tasks";
   const isAttendanceView = activeNav === "attendance";
   const isBranchesView = activeNav === "branches";
+  const isHRView = activeNav === "hr";
   const isCoursesView = activeNav === "courses";
   const isEnquiryView = activeNav === "enquiry";
   const isSettingsView = activeNav === "settings";
-  const pageTitle = isTeamView
-    ? "Team Members"
-    : isTasksView
-      ? "Team Tasks"
+  const pageTitle = isTasksView
+    ? "Team Tasks"
     : isAttendanceView
       ? "Attendance"
     : isBranchesView
       ? "Branches"
+    : isHRView
+      ? "HR"
     : isCoursesView
       ? "Courses"
     : isEnquiryView
       ? "Enquiries"
     : isSettingsView
       ? "Settings"
-      : "Dashboard";
-  const pageSubtitle = isTeamView
-    ? "Invite employees, share credentials, and manage organization access"
-    : isTasksView
-      ? "Manage your team's work, priorities, and deadlines"
+      : orgName;
+  const pageSubtitle = isTasksView
+    ? "Manage your team's work, priorities, and deadlines"
     : isAttendanceView
-      ? "Punch in/out and track today’s sessions in one place"
+      ? "Punch in/out and track today's sessions in one place"
     : isBranchesView
       ? "Manage your organization's branches and locations"
+    : isHRView
+      ? "Manage employee records, status and HR operations"
     : isCoursesView
       ? "Create, manage, and organize your training courses"
     : isEnquiryView
       ? "Track incoming leads, conversations, and follow-ups"
     : isSettingsView
       ? "Manage your organization's preferences and configurations"
-      : "Saturday, March 14, 2026";
+      : formatTimeIST(currentTime);
 
   const handleSignOut = () => {
     localStorage.removeItem("token");
@@ -144,7 +168,7 @@ export default function DashboardPage() {
             <button
               key={item.id}
               className="nav-item"
-              onClick={() => setActiveNav(item.id)}
+              onClick={() => navigate(item.path)}
               style={{
                 ...s.navItem,
                 background: activeNav === item.id ? "rgba(59,130,246,0.1)" : "transparent",
@@ -202,170 +226,17 @@ export default function DashboardPage() {
         </header>
 
         <div style={s.content}>
-          {isTeamView ? (
-            <TeamMembers />
-          ) : isTasksView ? (
-            <TeamTasksPage />
-          ) : isAttendanceView ? (
-            <Attendance />
-          ) : isBranchesView ? (
-            <Branches />
-          ) : isCoursesView ? (
-            <Courses />
-          ) : isEnquiryView ? (
-            <EnquiryPage />
-          ) : isSettingsView ? (
-            <Settings />
-          ) : (
-            <>
-
-          {/* WELCOME BANNER */}
-          <div style={s.welcomeBanner}>
-            <div>
-              <p style={s.welcomeEyebrow}>✦ Welcome back</p>
-              <h2 style={s.welcomeTitle}>{userName} 👋</h2>
-              <p style={s.welcomeSub}>Here's what's happening across your organization today.</p>
-            </div>
-            <div style={s.welcomeActions}>
-              <button style={s.welcomeBtn}>+ New Project</button>
-              <button style={s.welcomeBtnOutline} onClick={() => setActiveNav("team")}>
-                Invite Member
-              </button>
-            </div>
-            <div style={s.welcomeGlow} />
-          </div>
-
-          {/* STAT CARDS */}
-          <div style={s.statsGrid}>
-            {STATS.map((stat, i) => (
-              <div
-                key={i}
-                className="stat-card"
-                style={{
-                  ...s.statCard,
-                  animationDelay: `${i * 0.08}s`,
-                  borderTop: `3px solid ${stat.color}`,
-                }}
-              >
-                <div style={s.statLabel}>{stat.label}</div>
-                <div style={{ ...s.statValue, color: stat.color }}>{stat.value}</div>
-                <div style={{ ...s.statChange, color: stat.up ? "#10b981" : "#f87171" }}>
-                  {stat.up ? "↑" : "↓"} {stat.change}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* MIDDLE ROW */}
-          <div style={s.midRow}>
-
-            {/* CHART */}
-            <div style={s.chartCard}>
-              <div style={s.cardHeader}>
-                <div>
-                  <h3 style={s.cardTitle}>Activity Overview</h3>
-                  <p style={s.cardSub}>Tasks completed per month</p>
-                </div>
-                <select style={s.cardSelect}>
-                  <option>2026</option>
-                  <option>2025</option>
-                </select>
-              </div>
-              <div style={s.chartArea}>
-                {CHART_DATA.map((val, i) => (
-                  <div key={i} style={s.chartCol}>
-                    <div
-                      style={{
-                        ...s.chartBar,
-                        height: `${val}%`,
-                        background: i === 2 ? "linear-gradient(180deg,#3b82f6,#7c3aed)" : "rgba(59,130,246,0.25)",
-                        animationDelay: `${i * 0.05}s`,
-                      }}
-                    />
-                    <span style={s.chartLabel}>{MONTHS[i]}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* ACTIVITY FEED */}
-            <div style={s.activityCard}>
-              <div style={s.cardHeader}>
-                <h3 style={s.cardTitle}>Recent Activity</h3>
-                <a href="#" style={s.seeAll}>See all</a>
-              </div>
-              <div>
-                {RECENT_ACTIVITY.map((act, i) => (
-                  <div key={i} className="activity-row" style={{ ...s.activityRow, animationDelay: `${i * 0.07}s` }}>
-                    <div style={{ ...s.activityAvatar, background: ["#3b82f6","#8b5cf6","#10b981","#f59e0b","#ec4899"][i % 5] }}>
-                      {act.avatar}
-                    </div>
-                    <div style={s.activityText}>
-                      <span style={s.activityUser}>{act.user}</span>
-                      <span style={s.activityAction}> {act.action} </span>
-                      <span style={s.activityTarget}>{act.target}</span>
-                    </div>
-                    <span style={s.activityTime}>{act.time}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* PROJECTS TABLE */}
-          <div style={s.projectsCard}>
-            <div style={s.cardHeader}>
-              <div>
-                <h3 style={s.cardTitle}>Active Projects</h3>
-                <p style={s.cardSub}>Track progress across all active workstreams</p>
-              </div>
-              <button style={s.welcomeBtn}>+ New Project</button>
-            </div>
-            <table style={s.table}>
-              <thead>
-                <tr style={s.tableHead}>
-                  <th style={s.th}>Project</th>
-                  <th style={s.th}>Progress</th>
-                  <th style={s.th}>Members</th>
-                  <th style={s.th}>Due Date</th>
-                  <th style={s.th}>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {PROJECTS.map((p, i) => (
-                  <tr key={i} className="proj-row" style={s.tableRow}>
-                    <td style={s.td}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                        <div style={{ width: 10, height: 10, borderRadius: "50%", background: p.color, flexShrink: 0 }} />
-                        <span style={s.projName}>{p.name}</span>
-                      </div>
-                    </td>
-                    <td style={s.td}>
-                      <div style={s.progressWrap}>
-                        <div style={s.progressTrack}>
-                          <div style={{ ...s.progressFill, width: `${p.progress}%`, background: p.color }} />
-                        </div>
-                        <span style={s.progressPct}>{p.progress}%</span>
-                      </div>
-                    </td>
-                    <td style={s.td}><span style={s.memberBadge}>👤 {p.members}</span></td>
-                    <td style={s.td}><span style={s.dueBadge}>{p.due}</span></td>
-                    <td style={s.td}>
-                      <span style={{
-                        ...s.statusBadge,
-                        background: p.status === "On Track" ? "rgba(16,185,129,0.15)" : p.status === "At Risk" ? "rgba(245,158,11,0.15)" : "rgba(139,92,246,0.15)",
-                        color: p.status === "On Track" ? "#10b981" : p.status === "At Risk" ? "#f59e0b" : "#8b5cf6",
-                      }}>
-                        {p.status}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-            </>
-          )}
+          <Routes>
+            <Route path="/" element={<DashboardHome />} />
+            <Route path="/tasks" element={<TeamTasksPage />} />
+            <Route path="/attendance" element={<Attendance />} />
+            <Route path="/branches" element={<Branches />} />
+            <Route path="/hr" element={<EmployeesPage />} />
+            <Route path="/courses" element={<Courses />} />
+            <Route path="/enquiry" element={<EnquiryPage />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/access-control" element={<AccessControl />} />
+          </Routes>
         </div>
       </main>
     </div>

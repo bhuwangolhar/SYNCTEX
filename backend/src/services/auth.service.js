@@ -32,7 +32,10 @@ exports.register = async ({ name, email, password, organizationName, mobile }) =
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  const organization = await Organization.create({ name: organizationName });
+  const organization = await Organization.create({ 
+    name: organizationName,
+    founder_name: name 
+  });
 
   const user = await User.create({
     name,

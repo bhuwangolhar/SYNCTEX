@@ -211,7 +211,7 @@ export default function HomePage() {
           <p style={styles.ctaSub}>Join thousands of organizations already running on SYNCTEX.</p>
           <div style={styles.ctaBtns}>
             <a href="/register" style={styles.heroPrimary}>Create free account</a>
-            <a href="#" style={{ ...styles.heroSecondary, borderColor: "rgba(255,255,255,0.3)", color: "#fff" }}>Schedule a demo</a>
+            <a href="#" style={{ ...styles.heroSecondary, borderColor: "rgba(255,255,255,0.3)", color: "#000000" }}>Schedule a demo</a>
           </div>
         </div>
       </section>
@@ -230,8 +230,8 @@ export default function HomePage() {
           </div>
           <div>
             <div style={styles.footerContactTitle}>Get in Touch</div>
-            <p style={styles.footerContact}>support@synctex.io</p>
-            <p style={styles.footerContact}>+91 98765 43210</p>
+            <p style={styles.footerContact}>support@synctex.eg</p>
+            <p style={styles.footerContact}>+91 12345 67890</p>
           </div>
         </div>
         <div style={styles.footerBottom}>© 2026 SYNCTEX. All rights reserved.</div>

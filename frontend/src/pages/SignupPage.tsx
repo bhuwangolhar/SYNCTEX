@@ -175,11 +175,7 @@ export default function SignupPage() {
           <div className="signin-row">
             Already have an account? <a href="/login">Sign in</a>
           </div>
-
-          <p style={{ fontSize: 12, color: '#64748b', textAlign: 'center', marginTop: 12 }}>
-            Are you an employee? Ask your admin to add you from the dashboard.
-            There is no self-signup for team members.
-          </p>
+          
         </form>
       </div>
     </div>

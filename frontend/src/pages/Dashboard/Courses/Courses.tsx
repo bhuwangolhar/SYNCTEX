@@ -272,7 +272,7 @@ export default function Courses() {
                 <th style={s.th}>Mode</th>
                 <th style={s.th}>Price</th>
                 <th style={s.th}>Status</th>
-                <th style={s.th}>Actions</th>
+                <th style={{ ...s.th, textAlign: 'right' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -313,7 +313,7 @@ export default function Courses() {
                       {course.course_status.charAt(0).toUpperCase() + course.course_status.slice(1)}
                     </span>
                   </td>
-                  <td style={s.td}>
+                  <td style={{ ...s.td, ...s.actionsTd }}>
                     <button onClick={() => handleEdit(course)} style={s.editBtn}>Edit</button>
                     {course.course_status !== 'archived' && (
                       <button onClick={() => handleArchive(course.id)} style={s.archiveBtn}>Archive</button>
@@ -495,9 +495,10 @@ const s: Record<string, React.CSSProperties> = {
   sellingPrice: { fontWeight: 600, color: '#059669' },
   discountedPrice: { fontSize: 12, color: '#94a3b8', textDecoration: 'line-through' },
   statusBadge: { fontSize: 11, fontWeight: 700, padding: '4px 12px', borderRadius: 99, display: 'inline-block' },
-  editBtn: { background: '#e2e8f0', border: 'none', borderRadius: 6, padding: '6px 12px', fontSize: 12, cursor: 'pointer', marginRight: 6 },
-  archiveBtn: { background: '#fef08a', border: 'none', borderRadius: 6, padding: '6px 12px', fontSize: 12, cursor: 'pointer', marginRight: 6, color: '#854d0e' },
+  editBtn: { background: '#e2e8f0', border: 'none', borderRadius: 6, padding: '6px 12px', fontSize: 12, cursor: 'pointer', marginRight: 10 },
+  archiveBtn: { background: '#fef08a', border: 'none', borderRadius: 6, padding: '6px 12px', fontSize: 12, cursor: 'pointer', marginRight: 10, color: '#854d0e' },
   deleteBtn: { background: '#fee2e2', border: 'none', borderRadius: 6, padding: '6px 12px', fontSize: 12, cursor: 'pointer', color: '#dc2626' },
+  actionsTd: { textAlign: 'right' as const },
   modalTitle: { fontFamily: "'Syne',sans-serif", fontWeight: 700, fontSize: 18, color: '#1e293b', margin: '0 0 6px' },
   modalSub: { fontSize: 13, color: '#64748b', marginBottom: 24 },
   form: { display: 'flex', flexDirection: 'column', gap: 16 },
