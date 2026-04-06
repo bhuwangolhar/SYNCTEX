@@ -2,11 +2,18 @@
 
 'use strict';
 
+console.log('\n📌 Starting app initialization...');
+console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('DATABASE_URL set:', !!process.env.DATABASE_URL);
+console.log('DB_HOST set:', !!process.env.DB_HOST);
+console.log('DB_NAME set:', !!process.env.DB_NAME);
+
 const express = require('express');
 const cors = require('cors');
 const { DataTypes } = require('sequelize');
 require('dotenv').config();
 
+console.log('\n📌 Loading database configuration...');
 const sequelize = require('../config/database');
 const authRoutes = require('./routes/auth.routes');
 const taskRoutes = require('./routes/task.routes');
@@ -52,34 +59,49 @@ app.get('/', (req, res) => {
 const PORT = process.env.PORT || 3000;
 const isProduction = process.env.NODE_ENV === 'production';
 
+console.log('\n⚙️  Application Configuration:');
+console.log('  - PORT:', PORT);
+console.log('  - NODE_ENV:', isProduction ? 'production' : 'development');
+
 const ensureSchema = async () => {
   // In production, use migrations instead of sync
   if (!isProduction) {
+    console.log('📋 Database sync (development only)...');
     await sequelize.sync({ alter: true });
-  }
-
-  const queryInterface = sequelize.getQueryInterface();
-  const usersTable = await queryInterface.describeTable('users');
-
-  if (!usersTable.mobile) {
-    await queryInterface.addColumn('users', 'mobile', {
-      type: DataTypes.STRING,
-      allowNull: true
-    });
-    if (!isProduction) console.log('Added missing users.mobile column');
+    console.log('✅ Database synced');
+  } else {
+    console.log('🔒 Production mode - skipping sync (migrations handle schema)');
   }
 };
 
 sequelize
   .authenticate()
   .then(async () => {
-    if (!isProduction) console.log('Database connected');
+    console.log('\n✅ Database authenticated successfully');
     await ensureSchema();
     app.listen(PORT, '0.0.0.0', () => {
-      console.log(`✅ Server running on port ${PORT}`);
+      console.log(`\n✅ Server listening on port ${PORT}`);
+      console.log('🌍 Ready to accept requests\n');
     });
   })
   .catch((err) => {
-    console.error('❌ DB connection failed:', err.message);
+    console.error('\n❌ STARTUP FAILED - Database connection error\n');
+    console.error('Error message:', err?.message || 'Unknown error');
+    console.error('Error code:', err?.code || 'N/A');
+    console.error('Error original:', err?.original?.message || 'N/A');
+    console.error('\n🔍 Debug info:');
+    console.error('  - DATABASE_URL set:', !!process.env.DATABASE_URL);
+    console.error('  - DB_HOST set:', !!process.env.DB_HOST);
+    console.error('  - NODE_ENV:', process.env.NODE_ENV);
+    console.error('\n💡 Next steps:');
+    console.error('  1. Verify DATABASE_URL in Render environment variables');
+    console.error('  2. Check PostgreSQL server is running and accessible');
+    console.error('  3. Verify credentials in DATABASE_URL are correct');
+    console.error('  4. Run "npm run check-env" locally to verify setup');
+    
+    if (err?.original) {
+      console.error('\nFull error details:', err.original);
+    }
+    
     process.exit(1);
   });
