@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
 "scripts": {
-  "start": "npx sequelize-cli db:migrate --env production && node src/server.js"
+  "start": "npx sequelize-cli db:migrate --env production && node src/server.js",
+  "deploy": "node scripts/reset-migrations.js && npx sequelize-cli db:migrate --env production && node src/server.js"
 },
   "keywords": [],
   "author": "",
