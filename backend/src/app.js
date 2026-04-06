@@ -75,14 +75,11 @@ sequelize
   .then(async () => {
     if (!isProduction) console.log('Database connected');
     await ensureSchema();
-    app.listen(PORT, () => {
-      if (!isProduction) console.log(`Server running on port ${PORT}`);
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`✅ Server running on port ${PORT}`);
     });
   })
   .catch((err) => {
-    // Never expose full error details - just indicate failure
-    if (!isProduction) {
-      console.error('DB connection failed:', err.message);
-    }
+    console.error('❌ DB connection failed:', err.message);
     process.exit(1);
   });
