@@ -2,6 +2,8 @@
 
 const organizationService = require('../services/organization.service');
 
+const isProduction = process.env.NODE_ENV === 'production';
+
 /**
  * Get organization details by ID
  */
@@ -16,8 +18,8 @@ exports.getOrganization = async (req, res) => {
 
     res.json(organization);
   } catch (err) {
-    console.error('Error fetching organization:', err);
-    res.status(500).json({ error: err.message });
+    if (!isProduction) console.error('Error fetching organization:', err.message);
+    res.status(500).json({ error: 'Failed to fetch organization' });
   }
 };
 
@@ -39,7 +41,7 @@ exports.updateOrganization = async (req, res) => {
 
     res.json({ message: 'Organization updated successfully', organization });
   } catch (err) {
-    console.error('Error updating organization:', err);
-    res.status(500).json({ error: err.message });
+    if (!isProduction) console.error('Error updating organization:', err.message);
+    res.status(500).json({ error: 'Failed to update organization' });
   }
 };

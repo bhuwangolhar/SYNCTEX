@@ -1,13 +1,14 @@
 'use strict';
 
 const userService = require('../services/user.service');
+const isProduction = process.env.NODE_ENV === 'production';
 
 exports.listUsers = async (req, res) => {
   try {
     const users = await userService.listUsers(req.user.organizationId);
     res.json(users);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res.status(400).json({ message: 'Failed to list users' });
   }
 };
 
@@ -28,7 +29,7 @@ exports.createUser = async (req, res) => {
         userName: user.name
       });
     } catch (error) {
-      console.warn('Default branch for new user creation failed:', error.message);
+      if (!isProduction) console.warn('Default branch creation failed');
     }
     res.status(201).json(user);
   } catch (err) {
@@ -45,6 +46,6 @@ exports.updateUser = async (req, res) => {
     );
     res.json(user);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res.status(400).json({ message: 'Failed to update user' });
   }
 };

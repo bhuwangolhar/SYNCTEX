@@ -162,7 +162,7 @@ export default function SignupPage() {
               onChange={(e) => setAgreed(e.target.checked)}
             />
             <label htmlFor="terms">
-              I agree with all <a href="/terms">terms and conditions</a>
+              I agree with all <span>terms and conditions</span>
             </label>
           </div>
 

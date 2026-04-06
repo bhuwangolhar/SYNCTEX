@@ -22,8 +22,16 @@ const organizationRoutes = require('./routes/organization.routes');
 
 const app = express();
 
-app.use(cors());
-app.use(express.json());
+// Production-safe CORS configuration
+const corsOptions = {
+  origin: process.env.NODE_ENV === 'production' 
+    ? (process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',') : [])
+    : true,
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+app.use(cors(corsOptions));
+app.use(express.json({ limit: '10mb' }));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/tasks', taskRoutes);
@@ -42,9 +50,13 @@ app.get('/', (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
+const isProduction = process.env.NODE_ENV === 'production';
 
 const ensureSchema = async () => {
-  await sequelize.sync({ alter: true });
+  // In production, use migrations instead of sync
+  if (!isProduction) {
+    await sequelize.sync({ alter: true });
+  }
 
   const queryInterface = sequelize.getQueryInterface();
   const usersTable = await queryInterface.describeTable('users');
@@ -54,15 +66,23 @@ const ensureSchema = async () => {
       type: DataTypes.STRING,
       allowNull: true
     });
-    console.log('Added missing users.mobile column');
+    if (!isProduction) console.log('Added missing users.mobile column');
   }
 };
 
 sequelize
   .authenticate()
   .then(async () => {
-    console.log('Database connected');
+    if (!isProduction) console.log('Database connected');
     await ensureSchema();
-    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+    app.listen(PORT, () => {
+      if (!isProduction) console.log(`Server running on port ${PORT}`);
+    });
   })
-  .catch((err) => console.error('DB error:', err));
+  .catch((err) => {
+    // Never expose full error details - just indicate failure
+    if (!isProduction) {
+      console.error('DB connection failed:', err.message);
+    }
+    process.exit(1);
+  });

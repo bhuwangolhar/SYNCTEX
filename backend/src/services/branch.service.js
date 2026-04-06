@@ -38,7 +38,7 @@ const deriveStateCode = (gstin) => {
 };
 
 exports.getBranches = async (organizationId) => {
-  console.log('[branch.service] getBranches for org', organizationId);
+  const isProduction = process.env.NODE_ENV === 'production';
   try {
     const branches = await Branch.findAll({
       where: { organization_id: organizationId },
@@ -48,16 +48,14 @@ exports.getBranches = async (organizationId) => {
       ],
       order: [['createdAt', 'DESC']]
     });
-    console.log('[branch.service] found', branches.length, 'branches');
     return branches;
   } catch (err) {
-    console.error('[branch.service] getBranches error:', err.message);
+    if (!isProduction) console.error('[branch.service] getBranches error:', err.message);
     // fallback: return without includes if associations fail
     const branches = await Branch.findAll({
       where: { organization_id: organizationId },
       order: [['createdAt', 'DESC']]
     });
-    console.log('[branch.service] fallback found', branches.length, 'branches');
     return branches;
   }
 };
