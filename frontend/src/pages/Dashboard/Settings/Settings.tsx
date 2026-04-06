@@ -550,7 +550,7 @@ const s: Record<string, React.CSSProperties> = {
   searchBar: { display: 'flex', alignItems: 'center', gap: 12, position: 'relative' },
   searchIcon: { position: 'absolute', left: 14, fontSize: 16, color: '#94a3b8' },
   searchInput: { flex: 1, border: '1px solid #e2e8f0', borderRadius: 8, padding: '11px 14px 11px 40px', fontSize: 14, outline: 'none', fontFamily: "'DM Sans',sans-serif", color: '#1e293b' },
-  grid: { display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 20, '@media (max-width: 768px)': { gridTemplateColumns: '1fr' } },
+  grid: { display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 20 },
   settingsBox: { background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12, overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' },
   categoryHeader: { display: 'flex', alignItems: 'center', gap: 12, padding: '16px 16px', borderBottom: '1px solid #f1f5f9', background: '#f8fafc' },
   categoryIcon: { fontSize: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', width: 40, height: 40, background: 'rgba(59,130,246,0.1)', borderRadius: 8 },

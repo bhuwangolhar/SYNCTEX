@@ -5,8 +5,8 @@ export default function TaskFormModal({ onClose, reload, orgId }: any) {
   const [form, setForm] = useState({
     title: "",
     description: "",
-    priority: "MEDIUM",
-    status: "TODO"
+    priority: "MEDIUM" as const,
+    status: "TODO" as const
   });
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
@@ -27,9 +27,10 @@ export default function TaskFormModal({ onClose, reload, orgId }: any) {
       setError("");
 
       await createTask({
-        ...form,
         title: form.title.trim(),
         description: form.description.trim(),
+        priority: form.priority,
+        status: form.status,
         organization_id: orgId
       });
 

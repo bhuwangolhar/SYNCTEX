@@ -12,12 +12,14 @@ import {
   updateDepartment,
   deleteDepartment
 } from '../../../services/department.service';
+import type { Department, DepartmentPayload } from '../../../services/department.service';
 import {
   listRoles,
   createRole,
   updateRole,
   deleteRole
 } from '../../../services/role.service';
+import type { Role, RolePayload } from '../../../services/role.service';
 
 const INITIAL_EMPLOYEE: EmployeePayload = {
   employeeId: '',
@@ -113,6 +115,17 @@ export default function Employees() {
     setForm(INITIAL_EMPLOYEE);
     setError('');
     setSuccess('');
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Remove employee?')) return;
+    try {
+      await deleteEmployee(id);
+      refreshAll();
+      setSuccess('Employee removed');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Remove failed');
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
