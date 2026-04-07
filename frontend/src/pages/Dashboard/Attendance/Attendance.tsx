@@ -200,7 +200,7 @@ export default function Attendance() {
             <div style={s.statValue}>
               {attendance.activeSession
                 ? getDistanceLabel(attendance.activeSession.latitude, attendance.activeSession.longitude)
-                : 'Not punched in'}
+                : 'Remote'}
             </div>
           </div>
         </div>
