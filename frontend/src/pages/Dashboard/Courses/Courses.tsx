@@ -269,6 +269,7 @@ export default function Courses() {
             <thead>
               <tr style={s.thead}>
                 <th style={s.th}>Course</th>
+                <th style={s.th}>Code</th>
                 <th style={s.th}>Mode</th>
                 <th style={s.th}>Price</th>
                 <th style={s.th}>Status</th>
@@ -279,12 +280,10 @@ export default function Courses() {
               {courses.map((course) => (
                 <tr key={course.id} className="course-row" style={s.tr}>
                   <td style={s.td}>
-                    <div style={s.courseNameCol}>
-                      <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-                        <div style={s.courseName}>{course.courseName || 'Unnamed Course'}</div>
-                        <div style={s.courseCode}>{course.courseCode || '—'}</div>
-                      </div>
-                    </div>
+                    <div style={s.courseName}>{course.courseName || 'Unnamed Course'}</div>
+                  </td>
+                  <td style={s.td}>
+                    <div style={s.courseCode}>{course.courseCode || '—'}</div>
                   </td>
                   <td style={s.td}>{course.deliveryMode ? (course.deliveryMode.charAt(0).toUpperCase() + course.deliveryMode.slice(1)) : '—'}</td>
                   <td style={s.td}>
@@ -323,7 +322,7 @@ export default function Courses() {
               ))}
               {courses.length === 0 && (
                 <tr>
-                  <td colSpan={5} style={{ ...s.td, textAlign: 'center', color: '#94a3b8', padding: '32px' }}>
+                  <td colSpan={6} style={{ ...s.td, textAlign: 'center', color: '#94a3b8', padding: '32px' }}>
                     No courses found
                   </td>
                 </tr>

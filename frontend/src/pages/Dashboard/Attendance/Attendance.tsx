@@ -177,6 +177,14 @@ export default function Attendance() {
       {locationError && <div style={s.errorBanner}>{locationError}</div>}
       {success && <div style={s.successBanner}>{success}</div>}
 
+      <div style={s.workInProgressBanner}>
+        <div style={s.wibIcon}>🚀</div>
+        <div style={s.wibContent}>
+          <div style={s.wibTitle}>Module Under Development</div>
+          <div style={s.wibText}>We're working on making this module fully functional. Thank you for your patience!</div>
+        </div>
+      </div>
+
       <div style={s.card}>
         <div style={s.statsRow}>
           <div style={s.statItem}>
@@ -300,7 +308,12 @@ const s: Record<string, React.CSSProperties> = {
   tableWrapTitle: { fontFamily: "'Syne',sans-serif", fontWeight: 700, fontSize: 16, color: '#1e293b', margin: '0 0 12px 0' },
   table: { width: '100%', borderCollapse: 'collapse', fontSize: 13 },
   errorBanner: { background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)', color: '#dc2626', borderRadius: 8, padding: '8px 12px' },
-  successBanner: { background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', color: '#059669', borderRadius: 8, padding: '8px 12px' }
+  successBanner: { background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', color: '#059669', borderRadius: 8, padding: '8px 12px' },
+  workInProgressBanner: { background: '#f0f4ff', border: '1px solid #d1d5f7', borderRadius: 10, padding: '14px 16px', marginBottom: 16, display: 'flex', gap: 12, alignItems: 'flex-start' },
+  wibIcon: { fontSize: 20, marginTop: 2 },
+  wibContent: { display: 'flex', flexDirection: 'column', gap: 4 },
+  wibTitle: { fontSize: 14, fontWeight: 600, color: '#4f46e5' },
+  wibText: { fontSize: 13, color: '#6366f1' }
 };
 
 // Add table cell styles to global styles
