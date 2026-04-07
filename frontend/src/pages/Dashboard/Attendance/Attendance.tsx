@@ -238,12 +238,11 @@ export default function Attendance() {
             placeholder="Session summary (editable while active)"
             style={s.textarea}
             rows={3}
-            disabled={!attendance.activeSession}
           />
           <button
             onClick={handleSaveSummary}
             disabled={!attendance.activeSession}
-            style={s.saveBtn}
+            style={attendance.activeSession ? s.saveBtn : { ...s.saveBtn, opacity: 0.5, cursor: 'not-allowed' }}
           >
             Save Summary
           </button>
