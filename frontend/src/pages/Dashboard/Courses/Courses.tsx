@@ -263,6 +263,22 @@ export default function Courses() {
       {/* Course list table */}
       {loading ? (
         <p style={s.loading}>Loading courses…</p>
+      ) : courses.length === 0 ? (
+        <div style={s.emptyStateContainer}>
+          <div style={s.emptyStateCard}>
+            <div style={s.emptyStateIcon}>📚</div>
+            <h3 style={s.emptyStateTitle}>Create Your First Course</h3>
+            <p style={s.emptyStateText}>
+              Build and manage training courses for your organization. Start by creating your first course.
+            </p>
+            <button 
+              onClick={() => { setShowModal(true); setError(''); setSuccess(''); }}
+              style={s.emptyStateBtn}
+            >
+              + New Course
+            </button>
+          </div>
+        </div>
       ) : (
         <div style={s.tableWrap}>
           <table style={s.table}>
@@ -320,13 +336,6 @@ export default function Courses() {
                   </td>
                 </tr>
               ))}
-              {courses.length === 0 && (
-                <tr>
-                  <td colSpan={6} style={{ ...s.td, textAlign: 'center', color: '#94a3b8', padding: '32px' }}>
-                    No courses found
-                  </td>
-                </tr>
-              )}
             </tbody>
           </table>
         </div>
@@ -509,5 +518,11 @@ const s: Record<string, React.CSSProperties> = {
   input: { border: '1px solid #e2e8f0', borderRadius: 8, padding: '9px 12px', fontSize: 13, outline: 'none', fontFamily: "'DM Sans',sans-serif", color: '#1e293b' },
   formActions: { display: 'flex', gap: 10, marginTop: 8 },
   submitBtn: { flex: 1, background: 'linear-gradient(90deg,#3b82f6,#7c3aed)', color: '#fff', border: 'none', borderRadius: 9, padding: '11px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans',sans-serif" },
-  cancelBtn: { padding: '11px 20px', background: '#f1f5f9', border: '1px solid #e2e8f0', borderRadius: 9, fontSize: 14, cursor: 'pointer', color: '#475569', fontFamily: "'DM Sans',sans-serif" }
+  cancelBtn: { padding: '11px 20px', background: '#f1f5f9', border: '1px solid #e2e8f0', borderRadius: 9, fontSize: 14, cursor: 'pointer', color: '#475569', fontFamily: "'DM Sans',sans-serif" },
+  emptyStateContainer: { display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '400px', padding: '40px 20px' },
+  emptyStateCard: { background: '#fff', border: '1px solid #e2e8f0', borderRadius: 14, padding: '48px 32px', textAlign: 'center', maxWidth: '420px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 },
+  emptyStateIcon: { fontSize: 56, marginBottom: 8 },
+  emptyStateTitle: { fontFamily: "'Syne',sans-serif", fontWeight: 700, fontSize: 20, color: '#1e293b', margin: 0 },
+  emptyStateText: { fontSize: 14, color: '#64748b', lineHeight: 1.5, margin: 0 },
+  emptyStateBtn: { background: 'linear-gradient(90deg,#3b82f6,#7c3aed)', color: '#fff', border: 'none', borderRadius: 8, padding: '11px 24px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans',sans-serif", marginTop: 8 }
 };
