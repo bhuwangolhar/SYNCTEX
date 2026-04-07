@@ -327,22 +327,36 @@ export default function Employees() {
             <div style={{ flex: 1 }}></div>
             <button style={s.addBtn} onClick={() => { setDeptForm({ name: '', code: '', description: '' }); setEditingDept(null); setShowDeptModal(true); }}>+ Add Department</button>
           </div>
-          <div style={s.listPanel}>
-            <ul style={s.simpleList}>
-              {departments.map((d) => (
-                <li key={d.id} style={s.listItem}>
-                  <div>
-                    <strong>{d.name}</strong> {d.code && `(${d.code})`}
-                    {d.description && <div style={{ fontSize: 12, color: '#64748b' }}>{d.description}</div>}
-                  </div>
-                  <div>
-                    <button style={s.editBtn} onClick={() => handleEditDepartment(d)}>Edit</button>
-                    <button style={s.deleteIcon} onClick={() => handleDeleteDepartment(d.id)}>Delete</button>
-                  </div>
-                </li>
-              ))}
-              {departments.length === 0 && <li style={s.empty}>No departments yet</li>}
-            </ul>
+          <div style={s.tableWrap}>
+            <table style={s.table}>
+              <thead>
+                <tr style={s.thRow}>
+                  <th style={s.th}>Name</th>
+                  <th style={s.th}>Code</th>
+                  <th style={s.th}>Description</th>
+                  <th style={s.th}>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {loading ? (
+                  <tr><td colSpan={4} style={s.loading}>Loading…</td></tr>
+                ) : departments.length === 0 ? (
+                  <tr><td colSpan={4} style={s.loading}>No departments found</td></tr>
+                ) : (
+                  departments.map(d => (
+                    <tr key={d.id} className="hr-row" style={s.tr}>
+                      <td style={s.td}>{d.name}</td>
+                      <td style={s.td}>{d.code || '—'}</td>
+                      <td style={s.td}>{d.description || '—'}</td>
+                      <td style={s.td}>
+                        <button style={s.smallBtn} onClick={() => handleEditDepartment(d)}>Edit</button>
+                        <button style={{ ...s.smallBtn, ...s.deleteBtn }} onClick={() => handleDeleteDepartment(d.id)}>Delete</button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
         </>
       )}
@@ -353,22 +367,36 @@ export default function Employees() {
             <div style={{ flex: 1 }}></div>
             <button style={s.addBtn} onClick={() => { setRoleForm({ name: '', code: '', description: '' }); setEditingRole(null); setShowRoleModal(true); }}>+ Add Role</button>
           </div>
-          <div style={s.listPanel}>
-            <ul style={s.simpleList}>
-              {roles.map((r) => (
-                <li key={r.id} style={s.listItem}>
-                  <div>
-                    <strong>{r.name}</strong> {r.code && `(${r.code})`}
-                    {r.description && <div style={{ fontSize: 12, color: '#64748b' }}>{r.description}</div>}
-                  </div>
-                  <div>
-                    <button style={s.editBtn} onClick={() => handleEditRole(r)}>Edit</button>
-                    <button style={s.deleteIcon} onClick={() => handleDeleteRole(r.id)}>Delete</button>
-                  </div>
-                </li>
-              ))}
-              {roles.length === 0 && <li style={s.empty}>No roles yet</li>}
-            </ul>
+          <div style={s.tableWrap}>
+            <table style={s.table}>
+              <thead>
+                <tr style={s.thRow}>
+                  <th style={s.th}>Name</th>
+                  <th style={s.th}>Code</th>
+                  <th style={s.th}>Description</th>
+                  <th style={s.th}>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {loading ? (
+                  <tr><td colSpan={4} style={s.loading}>Loading…</td></tr>
+                ) : roles.length === 0 ? (
+                  <tr><td colSpan={4} style={s.loading}>No roles found</td></tr>
+                ) : (
+                  roles.map(r => (
+                    <tr key={r.id} className="hr-row" style={s.tr}>
+                      <td style={s.td}>{r.name}</td>
+                      <td style={s.td}>{r.code || '—'}</td>
+                      <td style={s.td}>{r.description || '—'}</td>
+                      <td style={s.td}>
+                        <button style={s.smallBtn} onClick={() => handleEditRole(r)}>Edit</button>
+                        <button style={{ ...s.smallBtn, ...s.deleteBtn }} onClick={() => handleDeleteRole(r.id)}>Delete</button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
         </>
       )}
