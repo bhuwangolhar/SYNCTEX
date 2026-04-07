@@ -280,11 +280,10 @@ export default function Courses() {
                 <tr key={course.id} className="course-row" style={s.tr}>
                   <td style={s.td}>
                     <div style={s.courseNameCol}>
-                      <div style={s.courseName}>{course.courseName || 'Unnamed Course'}</div>
-                      <div style={s.courseCode}>{course.courseCode || '—'}</div>
-                      {course.description && (
-                        <div style={s.courseDesc}>{course.description.substring(0, 60)}...</div>
-                      )}
+                      <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+                        <div style={s.courseName}>{course.courseName || 'Unnamed Course'}</div>
+                        <div style={s.courseCode}>{course.courseCode || '—'}</div>
+                      </div>
                     </div>
                   </td>
                   <td style={s.td}>{course.deliveryMode ? (course.deliveryMode.charAt(0).toUpperCase() + course.deliveryMode.slice(1)) : '—'}</td>
