@@ -21,16 +21,16 @@ exports.getCourses = async (organizationId, filters = {}) => {
   const { search, status, limit = 50, offset = 0 } = filters;
   
   // Build where clause for organization and optional status filter
-  const where = { organization_id: organizationId };
+  const where = { organizationId };
   if (status && status !== 'all') {
-    where.course_status = status;
+    where.courseStatus = status;
   }
 
   // Add search across course name and code
   if (search) {
     where[require('sequelize').Op.or] = [
-      { course_name: { [require('sequelize').Op.iLike]: `%${search}%` } },
-      { course_code: { [require('sequelize').Op.iLike]: `%${search}%` } }
+      { courseName: { [require('sequelize').Op.iLike]: `%${search}%` } },
+      { courseCode: { [require('sequelize').Op.iLike]: `%${search}%` } }
     ];
   }
 
@@ -45,7 +45,7 @@ exports.getCourses = async (organizationId, filters = {}) => {
 // Get single course by ID with org isolation
 exports.getCourseById = async (id, organizationId) => {
   const course = await Course.findOne({
-    where: { id, organization_id: organizationId }
+    where: { id, organizationId }
   });
   if (!course) throw new Error('Course not found');
   return course;
@@ -54,16 +54,16 @@ exports.getCourseById = async (id, organizationId) => {
 // Get course status counts for dashboard stats
 exports.getCourseCounts = async (organizationId) => {
   const counts = await Course.findAll({
-    where: { organization_id: organizationId },
-    attributes: ['course_status', [require('sequelize').fn('COUNT', require('sequelize').col('id')), 'count']],
-    group: ['course_status'],
+    where: { organizationId },
+    attributes: ['courseStatus', [require('sequelize').fn('COUNT', require('sequelize').col('id')), 'count']],
+    group: ['courseStatus'],
     raw: true
   });
   
   // Build stats object with default 0 values
   const stats = { draft: 0, active: 0, archived: 0, total: 0 };
   counts.forEach(c => {
-    if (c.course_status) stats[c.course_status] = parseInt(c.count);
+    if (c.courseStatus) stats[c.courseStatus] = parseInt(c.count);
   });
   stats.total = Object.values(stats).reduce((a, b) => a + b, 0);
   return stats;
@@ -80,10 +80,10 @@ exports.createCourse = async (data, organizationId, userId) => {
   // Check for duplicate code and slug in org
   const existing = await Course.findOne({
     where: {
-      organization_id: organizationId,
+      organizationId,
       [require('sequelize').Op.or]: [
-        { course_code: normalized_code },
-        { course_slug: data.courseSlug.toLowerCase() }
+        { courseCode: normalized_code },
+        { courseSlug: data.courseSlug.toLowerCase() }
       ]
     }
   });
@@ -91,39 +91,39 @@ exports.createCourse = async (data, organizationId, userId) => {
 
   // Create course with mapped fields
   return await Course.create({
-    organization_id: organizationId,
-    course_code: normalized_code,
-    course_name: data.courseName.trim(),
-    course_slug: data.courseSlug.toLowerCase(),
+    organizationId,
+    courseCode: normalized_code,
+    courseName: data.courseName.trim(),
+    courseSlug: data.courseSlug.toLowerCase(),
     description: data.description || null,
-    delivery_mode: data.deliveryMode || 'online',
-    course_type: data.courseType || null,
-    course_status: data.courseStatus || 'draft',
-    selling_price: data.sellingPrice || null,
-    discounted_price: data.discountedPrice || null,
-    gst_percentage: data.gstPercentage || 18.00,
-    fee_plan: data.feePlan || null,
+    deliveryMode: data.deliveryMode || 'online',
+    courseType: data.courseType || null,
+    courseStatus: data.courseStatus || 'draft',
+    sellingPrice: data.sellingPrice || null,
+    discountedPrice: data.discountedPrice || null,
+    gstPercentage: data.gstPercentage || 18.00,
+    feePlan: data.feePlan || null,
     language: data.language || 'English',
-    show_on_homepage: Boolean(data.showOnHomepage),
-    created_by: userId
+    showOnHomepage: Boolean(data.showOnHomepage),
+    createdBy: userId
   });
 };
 
 // Update course with org isolation and validation
 exports.updateCourse = async (id, data, organizationId) => {
   const course = await Course.findOne({
-    where: { id, organization_id: organizationId }
+    where: { id, organizationId }
   });
   if (!course) throw new Error('Course not found');
 
   // Validate code if changing
-  if (data.courseCode && data.courseCode !== course.course_code) {
+  if (data.courseCode && data.courseCode !== course.courseCode) {
     const normalized = normalizeCourseCode(data.courseCode);
     if (!validateCourseCode(normalized)) throw new Error('Invalid course code format');
     const dupe = await Course.findOne({
       where: {
-        organization_id: organizationId,
-        course_code: normalized,
+        organizationId,
+        courseCode: normalized,
         id: { [require('sequelize').Op.ne]: id }
       }
     });
@@ -131,12 +131,12 @@ exports.updateCourse = async (id, data, organizationId) => {
   }
 
   // Validate slug if changing
-  if (data.courseSlug && data.courseSlug !== course.course_slug) {
+  if (data.courseSlug && data.courseSlug !== course.courseSlug) {
     if (!validateCourseSlug(data.courseSlug)) throw new Error('Invalid course slug format');
     const dupe = await Course.findOne({
       where: {
-        organization_id: organizationId,
-        course_slug: data.courseSlug.toLowerCase(),
+        organizationId,
+        courseSlug: data.courseSlug.toLowerCase(),
         id: { [require('sequelize').Op.ne]: id }
       }
     });
@@ -145,19 +145,19 @@ exports.updateCourse = async (id, data, organizationId) => {
 
   // Update fields
   const updatePayload = {
-    course_code: data.courseCode ? normalizeCourseCode(data.courseCode) : course.course_code,
-    course_name: data.courseName || course.course_name,
-    course_slug: data.courseSlug ? data.courseSlug.toLowerCase() : course.course_slug,
+    courseCode: data.courseCode ? normalizeCourseCode(data.courseCode) : course.courseCode,
+    courseName: data.courseName || course.courseName,
+    courseSlug: data.courseSlug ? data.courseSlug.toLowerCase() : course.courseSlug,
     description: data.description !== undefined ? data.description : course.description,
-    delivery_mode: data.deliveryMode || course.delivery_mode,
-    course_type: data.courseType || course.course_type,
-    course_status: data.courseStatus || course.course_status,
-    selling_price: data.sellingPrice !== undefined ? data.sellingPrice : course.selling_price,
-    discounted_price: data.discountedPrice !== undefined ? data.discountedPrice : course.discounted_price,
-    gst_percentage: data.gstPercentage || course.gst_percentage,
-    fee_plan: data.feePlan || course.fee_plan,
+    deliveryMode: data.deliveryMode || course.deliveryMode,
+    courseType: data.courseType || course.courseType,
+    courseStatus: data.courseStatus || course.courseStatus,
+    sellingPrice: data.sellingPrice !== undefined ? data.sellingPrice : course.sellingPrice,
+    discountedPrice: data.discountedPrice !== undefined ? data.discountedPrice : course.discountedPrice,
+    gstPercentage: data.gstPercentage || course.gstPercentage,
+    feePlan: data.feePlan || course.feePlan,
     language: data.language || course.language,
-    show_on_homepage: data.showOnHomepage !== undefined ? Boolean(data.showOnHomepage) : course.show_on_homepage
+    showOnHomepage: data.showOnHomepage !== undefined ? Boolean(data.showOnHomepage) : course.showOnHomepage
   };
 
   await course.update(updatePayload);
@@ -167,7 +167,7 @@ exports.updateCourse = async (id, data, organizationId) => {
 // Delete course with org isolation
 exports.deleteCourse = async (id, organizationId) => {
   const course = await Course.findOne({
-    where: { id, organization_id: organizationId }
+    where: { id, organizationId }
   });
   if (!course) throw new Error('Course not found');
   await course.destroy();
@@ -177,9 +177,9 @@ exports.deleteCourse = async (id, organizationId) => {
 // Archive course (soft-ish delete via status)
 exports.archiveCourse = async (id, organizationId) => {
   const course = await Course.findOne({
-    where: { id, organization_id: organizationId }
+    where: { id, organizationId }
   });
   if (!course) throw new Error('Course not found');
-  await course.update({ course_status: 'archived' });
+  await course.update({ courseStatus: 'archived' });
   return course;
 };

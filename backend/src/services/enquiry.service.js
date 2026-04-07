@@ -5,7 +5,7 @@
 const Enquiry = require('../models/enquiry.model');
 
 exports.getAll = async (organizationId) => {
-  return await Enquiry.findAll({ where: { organization_id: organizationId } });
+  return await Enquiry.findAll({ where: { organizationId } });
 };
 
 exports.create = async (data, organizationId) => {
@@ -13,21 +13,21 @@ exports.create = async (data, organizationId) => {
 
   return await Enquiry.create({
     ...data,
-    organization_id: organizationId   // always use server-side org
+    organizationId   // always use server-side org
   });
 };
 
 exports.update = async (id, data, organizationId) => {
-  const e = await Enquiry.findOne({ where: { id, organization_id: organizationId } });
+  const e = await Enquiry.findOne({ where: { id, organizationId } });
   if (!e) throw new Error('Enquiry not found in your organization');
 
-  delete data.organization_id;
+  delete data.organizationId;
   await e.update(data);
   return e;
 };
 
 exports.delete = async (id, organizationId) => {
-  const e = await Enquiry.findOne({ where: { id, organization_id: organizationId } });
+  const e = await Enquiry.findOne({ where: { id, organizationId } });
   if (!e) throw new Error('Enquiry not found in your organization');
 
   await e.destroy();

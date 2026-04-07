@@ -34,7 +34,7 @@ exports.register = async ({ name, email, password, organizationName, mobile }) =
 
   const organization = await Organization.create({ 
     name: organizationName,
-    founder_name: name 
+    founderName: name 
   });
 
   const user = await User.create({
@@ -42,7 +42,7 @@ exports.register = async ({ name, email, password, organizationName, mobile }) =
     email: cleanEmail,
     password: hashedPassword,
     role: 'ADMIN',
-    organization_id: organization.id,
+    organizationId: organization.id,
     mobile: mobile || null
   });
 
@@ -78,8 +78,8 @@ exports.login = async ({ email, password }) => {
   const valid = await bcrypt.compare(password, user.password);
   if (!valid) throw new Error('Invalid credentials');
 
-  const token = _signToken(user, user.organization_id);
-  const organization = await Organization.findByPk(user.organization_id);
+  const token = _signToken(user, user.organizationId);
+  const organization = await Organization.findByPk(user.organizationId);
 
   return { user: _safeUser(user, organization?.name || ''), token };
 };

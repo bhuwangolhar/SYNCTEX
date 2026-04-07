@@ -8,7 +8,7 @@ const Task = require('../models/task.model');
  * organizationId always comes from req.user — never from the request body/query.
  */
 exports.getTasks = async (organizationId) => {
-  return await Task.findAll({ where: { organization_id: organizationId } });
+  return await Task.findAll({ where: { organizationId } });
 };
 
 exports.createTask = async (data, organizationId) => {
@@ -16,22 +16,22 @@ exports.createTask = async (data, organizationId) => {
 
   return await Task.create({
     ...data,
-    organization_id: organizationId   // always use server-side org, ignore any client value
+    organizationId   // always use server-side org, ignore any client value
   });
 };
 
 exports.updateTask = async (id, data, organizationId) => {
-  const task = await Task.findOne({ where: { id, organization_id: organizationId } });
+  const task = await Task.findOne({ where: { id, organizationId } });
 
   if (!task) throw new Error('Task not found in your organization');
 
-  delete data.organization_id;  // prevent client from moving task to another org
+  delete data.organizationId;  // prevent client from moving task to another org
   await task.update(data);
   return task;
 };
 
 exports.deleteTask = async (id, organizationId) => {
-  const task = await Task.findOne({ where: { id, organization_id: organizationId } });
+  const task = await Task.findOne({ where: { id, organizationId } });
 
   if (!task) throw new Error('Task not found in your organization');
 

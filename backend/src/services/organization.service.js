@@ -38,12 +38,12 @@ exports.updateOrganization = async (organizationId, updateData) => {
     organization.name = updateData.name;
   }
   
-  if (updateData.founder_name !== undefined) {
-    organization.founder_name = updateData.founder_name;
+  if (updateData.founderName !== undefined) {
+    organization.founderName = updateData.founderName;
   }
   
   if (updateData.contactInfo !== undefined) {
-    organization.contact_info = updateData.contactInfo;
+    organization.contactInfo = updateData.contactInfo;
   }
   
   if (updateData.logo !== undefined) {
@@ -51,7 +51,7 @@ exports.updateOrganization = async (organizationId, updateData) => {
   }
   
   if (updateData.taxInfo !== undefined) {
-    organization.tax_info = updateData.taxInfo;
+    organization.taxInfo = updateData.taxInfo;
   }
 
   await organization.save();

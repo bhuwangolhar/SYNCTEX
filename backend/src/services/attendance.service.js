@@ -9,7 +9,7 @@ const getTodayDate = () => new Date().toISOString().slice(0, 10);
 
 const loadActiveSession = async (userId, organizationId, transaction) => {
   const days = await AttendanceDay.findAll({
-    where: { user_id: userId, organization_id: organizationId },
+    where: { userId, organizationId },
     attributes: ['id'],
     transaction
   });
@@ -21,7 +21,7 @@ const loadActiveSession = async (userId, organizationId, transaction) => {
   }
 
   const session = await AttendanceSession.findOne({
-    where: { attendance_day_id: { [Op.in]: dayIds }, punch_out_at: null },
+    where: { attendanceDayId: { [Op.in]: dayIds }, punchOutAt: null },
     transaction
   });
 
@@ -29,13 +29,13 @@ const loadActiveSession = async (userId, organizationId, transaction) => {
 };
 
 const recalcDayWorkedSeconds = async (attendanceDay, transaction) => {
-  const sum = await AttendanceSession.sum('duration_seconds', {
-    where: { attendance_day_id: attendanceDay.id, duration_seconds: { [Op.not]: null } },
+  const sum = await AttendanceSession.sum('durationSeconds', {
+    where: { attendanceDayId: attendanceDay.id, durationSeconds: { [Op.not]: null } },
     transaction
   });
 
   const total = Number(sum || 0);
-  await attendanceDay.update({ total_worked_seconds: total }, { transaction });
+  await attendanceDay.update({ totalWorkedSeconds: total }, { transaction });
   return total;
 };
 
@@ -52,14 +52,14 @@ exports.punchIn = async (userId, organizationId, payload) => {
     const date = getTodayDate();
 
     let attendanceDay = await AttendanceDay.findOne({
-      where: { user_id: userId, organization_id: organizationId, date },
+      where: { userId, organizationId, date },
       transaction: tx
     });
 
     if (!attendanceDay) {
       attendanceDay = await AttendanceDay.create({
-        organization_id: organizationId,
-        user_id: userId,
+        organizationId,
+        userId,
         date,
         status: 'OPEN'
       }, { transaction: tx });
@@ -68,13 +68,13 @@ exports.punchIn = async (userId, organizationId, payload) => {
     }
 
     const session = await AttendanceSession.create({
-      attendance_day_id: attendanceDay.id,
-      punch_in_at: now,
+      attendanceDayId: attendanceDay.id,
+      punchInAt: now,
       latitude: payload.latitude ?? null,
       longitude: payload.longitude ?? null,
-      location_name: locationName,
-      summary_text: payload.summaryText || null,
-      total_break_seconds: 0
+      locationName,
+      summaryText: payload.summaryText || null,
+      totalBreakSeconds: 0
     }, { transaction: tx });
 
     return { attendanceDay, session };
@@ -91,7 +91,7 @@ exports.punchOut = async (userId, organizationId) => {
     }
 
     const day = await AttendanceDay.findOne({
-      where: { id: activeSession.attendance_day_id, user_id: userId, organization_id: organizationId },
+      where: { id: activeSession.attendanceDayId, userId, organizationId },
       transaction: tx
     });
 
@@ -100,18 +100,18 @@ exports.punchOut = async (userId, organizationId) => {
     }
 
     let durationSeconds = 0;
-    if (activeSession.punch_in_at) {
-      const elapsed = Math.floor((now.getTime() - new Date(activeSession.punch_in_at).getTime()) / 1000);
-      durationSeconds = Math.max(0, elapsed - (activeSession.total_break_seconds || 0));
+    if (activeSession.punchInAt) {
+      const elapsed = Math.floor((now.getTime() - new Date(activeSession.punchInAt).getTime()) / 1000);
+      durationSeconds = Math.max(0, elapsed - (activeSession.totalBreakSeconds || 0));
     }
 
-    await activeSession.update({ punch_out_at: now, duration_seconds: durationSeconds }, { transaction: tx });
+    await activeSession.update({ punchOutAt: now, durationSeconds }, { transaction: tx });
 
     await recalcDayWorkedSeconds(day, tx);
 
     // Close day when no open session remains.
     const openSession = await AttendanceSession.findOne({
-      where: { attendance_day_id: day.id, punch_out_at: null },
+      where: { attendanceDayId: day.id, punchOutAt: null },
       transaction: tx
     });
 
@@ -136,7 +136,7 @@ exports.startBreak = async (userId, organizationId) => {
       throw new Error('Break already started. End break first.');
     }
 
-    await activeSession.update({ break_started_at: now }, { transaction: tx });
+    await activeSession.update({ breakStartedAt: now }, { transaction: tx });
     return activeSession;
   });
 };
@@ -150,14 +150,14 @@ exports.endBreak = async (userId, organizationId) => {
       throw new Error('You need an active session to end a break.');
     }
 
-    if (!activeSession.break_started_at) {
+    if (!activeSession.breakStartedAt) {
       throw new Error('No active break to end.');
     }
 
-    const elapsed = Math.floor((now.getTime() - new Date(activeSession.break_started_at).getTime()) / 1000);
-    const totalBreakSeconds = (activeSession.total_break_seconds || 0) + Math.max(0, elapsed);
+    const elapsed = Math.floor((now.getTime() - new Date(activeSession.breakStartedAt).getTime()) / 1000);
+    const totalBreakSeconds = (activeSession.totalBreakSeconds || 0) + Math.max(0, elapsed);
 
-    await activeSession.update({ total_break_seconds: totalBreakSeconds, break_started_at: null }, { transaction: tx });
+    await activeSession.update({ totalBreakSeconds, breakStartedAt: null }, { transaction: tx });
     return activeSession;
   });
 };
@@ -170,14 +170,14 @@ exports.updateSessionSummary = async (userId, organizationId, sessionId, summary
   }
 
   const day = await AttendanceDay.findOne({
-    where: { id: session.attendance_day_id, user_id: userId, organization_id: organizationId }
+    where: { id: session.attendanceDayId, userId, organizationId }
   });
 
   if (!day) {
     throw new Error('Session not found in your organization');
   }
 
-  await session.update({ summary_text: summaryText });
+  await session.update({ summaryText });
   return session;
 };
 
@@ -198,11 +198,11 @@ const applyDayResult = (day, sessions) => {
 exports.getToday = async (userId, organizationId) => {
   const date = getTodayDate();
   const attendanceDay = await AttendanceDay.findOne({
-    where: { user_id: userId, organization_id: organizationId, date }
+    where: { userId, organizationId, date }
   });
 
   const sessions = attendanceDay
-    ? await AttendanceSession.findAll({ where: { attendance_day_id: attendanceDay.id }, order: [['punch_in_at', 'ASC']] })
+    ? await AttendanceSession.findAll({ where: { attendanceDayId: attendanceDay.id }, order: [['punchInAt', 'ASC']] })
     : [];
 
   return applyDayResult(attendanceDay, sessions);
@@ -214,11 +214,11 @@ exports.getByDate = async (userId, organizationId, date) => {
   }
 
   const attendanceDay = await AttendanceDay.findOne({
-    where: { user_id: userId, organization_id: organizationId, date }
+    where: { userId, organizationId, date }
   });
 
   const sessions = attendanceDay
-    ? await AttendanceSession.findAll({ where: { attendance_day_id: attendanceDay.id }, order: [['punch_in_at', 'ASC']] })
+    ? await AttendanceSession.findAll({ where: { attendanceDayId: attendanceDay.id }, order: [['punchInAt', 'ASC']] })
     : [];
 
   return applyDayResult(attendanceDay, sessions);

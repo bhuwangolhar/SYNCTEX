@@ -9,7 +9,7 @@ const branchService = require('./branch.service');
  */
 exports.listUsers = async (organizationId) => {
   return await User.findAll({
-    where: { organization_id: organizationId },
+    where: { organizationId },
     attributes: { exclude: ['password'] }
   });
 };
@@ -40,7 +40,7 @@ exports.createUser = async ({ name, email, mobile, password, role }, organizatio
     mobile: mobile || null,
     password: hashedPassword,
     role: resolvedRole,
-    organization_id: organizationId
+    organizationId
   });
 
   // create a user home branch for quick branch tracking
@@ -59,7 +59,7 @@ exports.createUser = async ({ name, email, mobile, password, role }, organizatio
  * Update a user — admin can only update users in their own org.
  */
 exports.updateUser = async (id, updates, organizationId) => {
-  const user = await User.findOne({ where: { id, organization_id: organizationId } });
+  const user = await User.findOne({ where: { id, organizationId } });
 
   if (!user) throw new Error('User not found in your organization');
 
@@ -68,8 +68,8 @@ exports.updateUser = async (id, updates, organizationId) => {
     updates.password = await bcrypt.hash(updates.password, 10);
   }
 
-  // Prevent changing organization_id through this route
-  delete updates.organization_id;
+  // Prevent changing organizationId through this route
+  delete updates.organizationId;
 
   await user.update(updates);
 

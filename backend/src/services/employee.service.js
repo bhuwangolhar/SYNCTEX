@@ -7,7 +7,7 @@ const { Op } = require('sequelize');
 const makeEmployeeId = () => `EMP-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2, 7).toUpperCase()}`;
 
 exports.getEmployees = async (organizationId, search = '', status = 'all') => {
-  const where = { organization_id: organizationId };
+  const where = { organizationId };
 
   if (status && status !== 'all') {
     where.status = status;
@@ -15,10 +15,10 @@ exports.getEmployees = async (organizationId, search = '', status = 'all') => {
 
   if (search) {
     where[Op.or] = [
-      { first_name: { [Op.iLike]: `%${search}%` } },
-      { last_name: { [Op.iLike]: `%${search}%` } },
+      { firstName: { [Op.iLike]: `%${search}%` } },
+      { lastName: { [Op.iLike]: `%${search}%` } },
       { email: { [Op.iLike]: `%${search}%` } },
-      { employee_id: { [Op.iLike]: `%${search}%` } }
+      { employeeId: { [Op.iLike]: `%${search}%` } }
     ];
   }
 
@@ -26,22 +26,22 @@ exports.getEmployees = async (organizationId, search = '', status = 'all') => {
 
   // Add organization admin user as employee-like record
   const admins = await User.findAll({
-    where: { organization_id: organizationId, role: 'ADMIN' }
+    where: { organizationId, role: 'ADMIN' }
   });
 
   const adminEmployees = admins.map((admin) => ({
     id: admin.id,
-    organization_id: admin.organization_id,
-    employee_id: `ADM-${admin.id.slice(0, 8)}`,
-    first_name: admin.name,
-    last_name: '',
+    organizationId: admin.organizationId,
+    employeeId: `ADM-${admin.id.slice(0, 8)}`,
+    firstName: admin.name,
+    lastName: '',
     email: admin.email,
     phone: admin.mobile || null,
     department: 'Administration',
     role: 'ADMIN',
     status: 'active',
-    date_of_joining: null,
-    created_by: admin.id,
+    dateOfJoining: null,
+    createdBy: admin.id,
     createdAt: admin.createdAt || new Date(),
     updatedAt: admin.updatedAt || new Date(),
     is_system_admin: true
@@ -51,7 +51,7 @@ exports.getEmployees = async (organizationId, search = '', status = 'all') => {
 };
 
 exports.getEmployeeById = async (id, organizationId) => {
-  const employee = await Employee.findOne({ where: { id, organization_id: organizationId } });
+  const employee = await Employee.findOne({ where: { id, organizationId } });
   if (!employee) throw new Error('Employee not found');
   return employee;
 };
@@ -65,37 +65,37 @@ exports.createEmployee = async (payload, organizationId, userId) => {
 
   const existing = await Employee.findOne({
     where: {
-      organization_id: organizationId,
-      employee_id: generatedEmployeeId
+      organizationId,
+      employeeId: generatedEmployeeId
     }
   });
   if (existing) throw new Error('employeeId already exists');
 
   return Employee.create({
-    organization_id: organizationId,
-    user_id: payload.userId || null,
-    employee_id: generatedEmployeeId,
-    first_name: payload.firstName,
-    last_name: payload.lastName || null,
+    organizationId,
+    userId: payload.userId || null,
+    employeeId: generatedEmployeeId,
+    firstName: payload.firstName,
+    lastName: payload.lastName || null,
     email: payload.email,
     phone: payload.phone || null,
     department: payload.department || null,
     role: payload.role || null,
     status: payload.status || 'active',
-    date_of_joining: payload.dateOfJoining || null,
-    created_by: userId
+    dateOfJoining: payload.dateOfJoining || null,
+    createdBy: userId
   });
 };
 
 exports.updateEmployee = async (id, payload, organizationId) => {
-  const employee = await Employee.findOne({ where: { id, organization_id: organizationId } });
+  const employee = await Employee.findOne({ where: { id, organizationId } });
   if (!employee) throw new Error('Employee not found');
 
-  if (payload.employeeId && payload.employeeId !== employee.employee_id) {
+  if (payload.employeeId && payload.employeeId !== employee.employeeId) {
     const duplicate = await Employee.findOne({
       where: {
-        organization_id: organizationId,
-        employee_id: payload.employeeId,
+        organizationId,
+        employeeId: payload.employeeId,
         id: { [Op.ne]: id }
       }
     });
@@ -103,20 +103,20 @@ exports.updateEmployee = async (id, payload, organizationId) => {
   }
 
   return employee.update({
-    employee_id: payload.employeeId || employee.employee_id,
-    first_name: payload.firstName || employee.first_name,
-    last_name: payload.lastName !== undefined ? payload.lastName : employee.last_name,
+    employeeId: payload.employeeId || employee.employeeId,
+    firstName: payload.firstName || employee.firstName,
+    lastName: payload.lastName !== undefined ? payload.lastName : employee.lastName,
     email: payload.email || employee.email,
     phone: payload.phone !== undefined ? payload.phone : employee.phone,
     department: payload.department !== undefined ? payload.department : employee.department,
     role: payload.role !== undefined ? payload.role : employee.role,
     status: payload.status || employee.status,
-    date_of_joining: payload.dateOfJoining || employee.date_of_joining
+    dateOfJoining: payload.dateOfJoining || employee.dateOfJoining
   });
 };
 
 exports.deleteEmployee = async (id, organizationId) => {
-  const employee = await Employee.findOne({ where: { id, organization_id: organizationId } });
+  const employee = await Employee.findOne({ where: { id, organizationId } });
   if (!employee) throw new Error('Employee not found');
   await employee.destroy();
   return true;

@@ -41,7 +41,7 @@ exports.getBranches = async (organizationId) => {
   const isProduction = process.env.NODE_ENV === 'production';
   try {
     const branches = await Branch.findAll({
-      where: { organization_id: organizationId },
+      where: { organizationId },
       include: [
         { model: require('../models/user.model'), as: 'owner', required: false, attributes: ['id', 'name'] },
         { model: require('../models/user.model'), as: 'creator', required: false, attributes: ['id', 'name'] }
@@ -53,7 +53,7 @@ exports.getBranches = async (organizationId) => {
     if (!isProduction) console.error('[branch.service] getBranches error:', err.message);
     // fallback: return without includes if associations fail
     const branches = await Branch.findAll({
-      where: { organization_id: organizationId },
+      where: { organizationId },
       order: [['createdAt', 'DESC']]
     });
     return branches;
@@ -63,7 +63,7 @@ exports.getBranches = async (organizationId) => {
 exports.getBranchById = async (id, organizationId) => {
   try {
     const branch = await Branch.findOne({
-      where: { id, organization_id: organizationId },
+      where: { id, organizationId },
       include: [
         { model: require('../models/user.model'), as: 'owner', required: false, attributes: ['id', 'name'] },
         { model: require('../models/user.model'), as: 'creator', required: false, attributes: ['id', 'name'] }
@@ -74,7 +74,7 @@ exports.getBranchById = async (id, organizationId) => {
   } catch (err) {
     // fallback without includes
     const branch = await Branch.findOne({
-      where: { id, organization_id: organizationId }
+      where: { id, organizationId }
     });
     if (!branch) throw new Error('Branch not found');
     return branch;
@@ -86,7 +86,7 @@ exports.createBranch = async (data, organizationId, createdBy) => {
   if (!validateBranchCode(normalizedCode)) throw new Error('Invalid branch code format');
 
   const existing = await Branch.findOne({
-    where: { branch_code: normalizedCode, organization_id: organizationId }
+    where: { branchCode: normalizedCode, organizationId }
   });
   if (existing) throw new Error('Branch code already exists in this organization');
 
@@ -126,46 +126,46 @@ exports.createBranch = async (data, organizationId, createdBy) => {
   }
 
   return await Branch.create({
-    organization_id: organizationId,
-    branch_code: normalizedCode,
+    organizationId,
+    branchCode: normalizedCode,
     name: data.name,
-    branch_type: data.branchType,
-    branch_status: data.branchStatus,
-    opening_date: data.openingDate || null,
-    operational_since: data.operationalSince || null,
-    address_line1: data.addressLine1 || finalAddress,
-    address_line2: data.addressLine2 || null,
+    branchType: data.branchType,
+    branchStatus: data.branchStatus,
+    openingDate: data.openingDate || null,
+    operationalSince: data.operationalSince || null,
+    addressLine1: data.addressLine1 || finalAddress,
+    addressLine2: data.addressLine2 || null,
     area: data.area || 'N/A',
     city: data.city || finalCity,
     state: data.state || finalState,
     country: data.country || 'India',
     pincode: normalizedPincode,
-    google_maps_link: data.googleMapsLink || null,
+    googleMapsLink: data.googleMapsLink || null,
     latitude: lat,
     longitude: lng,
     phone: normalizedPhone,
     email: data.email || `info@${String(organizationId).slice(0, 8)}.local`,
-    branch_owner_id: data.branchOwnerId || null,
-    gst_registered: Boolean(data.gstRegistered),
-    gstin_number: data.gstinNumber || null,
-    place_of_supply: data.placeOfSupply || null,
-    state_code: data.stateCode || null,
-    created_by: createdBy
+    branchOwnerId: data.branchOwnerId || null,
+    gstRegistered: Boolean(data.gstRegistered),
+    gstinNumber: data.gstinNumber || null,
+    placeOfSupply: data.placeOfSupply || null,
+    stateCode: data.stateCode || null,
+    createdBy
   });
 };
 
 exports.updateBranch = async (id, data, organizationId) => {
-  const branch = await Branch.findOne({ where: { id, organization_id: organizationId } });
+  const branch = await Branch.findOne({ where: { id, organizationId } });
   if (!branch) throw new Error('Branch not found');
 
   if (data.branchCode) {
     const normalizedCode = normalizeBranchCode(data.branchCode);
     if (!validateBranchCode(normalizedCode)) throw new Error('Invalid branch code format');
     const existing = await Branch.findOne({
-      where: { branch_code: normalizedCode, organization_id: organizationId, id: { [require('sequelize').Op.ne]: id } }
+      where: { branchCode: normalizedCode, organizationId, id: { [require('sequelize').Op.ne]: id } }
     });
     if (existing) throw new Error('Branch code already exists in this organization');
-    data.branch_code = normalizedCode;
+    data.branchCode = normalizedCode;
   }
 
   if (data.phone !== undefined && data.phone !== null && data.phone !== '') {
@@ -196,32 +196,32 @@ exports.updateBranch = async (id, data, organizationId) => {
     data.stateCode = deriveStateCode(data.gstinNumber);
   }
 
-  delete data.organization_id; // Prevent changing org
+  delete data.organizationId; // Prevent changing org
 
   const updatePayload = {
-    branch_code: data.branchCode ? normalizeBranchCode(data.branchCode) : branch.branch_code,
+    branchCode: data.branchCode ? normalizeBranchCode(data.branchCode) : branch.branchCode,
     name: data.name || branch.name,
-    branch_type: data.branchType || branch.branch_type,
-    branch_status: data.branchStatus || branch.branch_status,
-    opening_date: data.openingDate || branch.opening_date,
-    operational_since: data.operationalSince || branch.operational_since,
-    address_line1: data.addressLine1 || branch.address_line1,
-    address_line2: data.addressLine2 || branch.address_line2,
+    branchType: data.branchType || branch.branchType,
+    branchStatus: data.branchStatus || branch.branchStatus,
+    openingDate: data.openingDate || branch.openingDate,
+    operationalSince: data.operationalSince || branch.operationalSince,
+    addressLine1: data.addressLine1 || branch.addressLine1,
+    addressLine2: data.addressLine2 || branch.addressLine2,
     area: data.area || branch.area,
     city: data.city || branch.city,
     state: data.state || branch.state,
     country: data.country || branch.country,
     pincode: data.pincode || branch.pincode,
-    google_maps_link: data.googleMapsLink || branch.google_maps_link,
+    googleMapsLink: data.googleMapsLink || branch.googleMapsLink,
     latitude: data.latitude !== undefined ? data.latitude : branch.latitude,
     longitude: data.longitude !== undefined ? data.longitude : branch.longitude,
     phone: data.phone || branch.phone,
     email: data.email || branch.email,
-    branch_owner_id: data.branchOwnerId || branch.branch_owner_id,
-    gst_registered: data.gstRegistered !== undefined ? data.gstRegistered : branch.gst_registered,
-    gstin_number: data.gstinNumber || branch.gstin_number,
-    place_of_supply: data.placeOfSupply || branch.place_of_supply,
-    state_code: data.stateCode || branch.state_code
+    branchOwnerId: data.branchOwnerId || branch.branchOwnerId,
+    gstRegistered: data.gstRegistered !== undefined ? data.gstRegistered : branch.gstRegistered,
+    gstinNumber: data.gstinNumber || branch.gstinNumber,
+    placeOfSupply: data.placeOfSupply || branch.placeOfSupply,
+    stateCode: data.stateCode || branch.stateCode
   };
 
   await branch.update(updatePayload);
@@ -229,7 +229,7 @@ exports.updateBranch = async (id, data, organizationId) => {
 };
 
 exports.deleteBranch = async (id, organizationId) => {
-  const branch = await Branch.findOne({ where: { id, organization_id: organizationId } });
+  const branch = await Branch.findOne({ where: { id, organizationId } });
   if (!branch) throw new Error('Branch not found');
   // For now, simple delete since no references yet
   await branch.destroy();
@@ -238,7 +238,7 @@ exports.deleteBranch = async (id, organizationId) => {
 
 exports.createDefaultHomeBranch = async ({ organizationId, createdBy, ownerId = null, orgName, email = '', phone = '' }) => {
   const defaultCode = 'HOME';
-  const existing = await Branch.findOne({ where: { organization_id: organizationId, branch_code: defaultCode } });
+  const existing = await Branch.findOne({ where: { organizationId, branchCode: defaultCode } });
   if (existing) return existing;
 
   const normalizedPhone = validatePhone(phone) ? phone : DEFAULT_PHONE;
@@ -282,7 +282,7 @@ exports.createDefaultHomeBranch = async ({ organizationId, createdBy, ownerId = 
 
 exports.createDefaultUserBranch = async ({ organizationId, createdBy, ownerId, userName }) => {
   const code = `USER_${(ownerId || '').slice(0, 5).toUpperCase()}`.slice(0, 8);
-  const existing = await Branch.findOne({ where: { organization_id: organizationId, branch_code: code } });
+  const existing = await Branch.findOne({ where: { organizationId, branchCode: code } });
   if (existing) return existing;
 
   try {
