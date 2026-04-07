@@ -16,6 +16,13 @@ function secondsToHuman(seconds: number) {
   return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
 }
 
+function getDistanceLabel(latitude: number | null, longitude: number | null): string {
+  if (!latitude || !longitude) {
+    return 'Remote';
+  }
+  return 'On-site';
+}
+
 export default function Attendance() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -272,12 +279,12 @@ export default function Attendance() {
   );
 }
 
-const s: Record<string, React.CSSPropertieInAt).toLocaleTimeString()}</td>
-                  <td>{sess.punchOutAt ? new Date(sess.punchOutAt).toLocaleTimeString() : 'Active'}</td>
-                  <td>{sess.durationSeconds !== null && sess.durationSeconds !== undefined ? secondsToHuman(sess.durationSeconds) : '--'}</td>
-                  <td>{secondsToHuman(sess.totalBreakSeconds || 0)}{sess.breakStartedAt ? ' (ongoing)' : ''}</td>
-                  <td>{sess.locationName || 'Remote'}</td>
-                  <td>{sess.summaryTmplateColumns: 'repeat(3, 1fr)', gap: 12 },
+const s: Record<string, React.CSSProperties> = {
+  root: { fontSize: 14, color: '#1e293b' },
+  title: { fontFamily: "'Syne',sans-serif", fontWeight: 700, fontSize: 24, margin: '0 0 4px 0' },
+  sub: { fontSize: 13, color: '#64748b', margin: '0 0 18px 0' },
+  card: { background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12, padding: 16, marginBottom: 18 },
+  statsRow: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 },
   statItem: { background: '#f8fafc', borderRadius: 9, padding: 10 },
   statLabel: { color: '#64748b', fontSize: 12, marginBottom: 4 },
   statValue: { fontWeight: 700, fontSize: 16 },
