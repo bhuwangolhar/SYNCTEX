@@ -1,6 +1,6 @@
 {
   "routes": [
     { "handle": "filesystem" },
-    { "src": "^/(?!api|assets|favicon|manifest|robots)" , "dest": "/index.html" }
+    { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
