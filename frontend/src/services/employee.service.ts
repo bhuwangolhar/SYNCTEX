@@ -17,17 +17,18 @@ export interface EmployeePayload {
 
 export interface Employee {
   id: string;
-  organization_id: string;
-  employee_id: string;
-  first_name: string;
-  last_name: string | null;
+  organizationId: string;
+  employeeId: string;
+  firstName: string;
+  lastName: string | null;
   email: string;
   phone: string | null;
   department: string | null;
   role: string | null;
   status: string;
-  date_of_joining: string | null;
-  created_by: string | null;
+  dateOfJoining: string | null;
+  userId: string | null;
+  createdBy: string | null;
   createdAt: string;
   updatedAt: string;
 }

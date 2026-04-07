@@ -16,17 +16,6 @@ function secondsToHuman(seconds: number) {
   return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
 }
 
-const getDistanceLabel = (latitude: number | string | null, longitude: number | string | null) => {
-  const latNum = latitude === null || latitude === undefined ? null : Number(latitude);
-  const lngNum = longitude === null || longitude === undefined ? null : Number(longitude);
-
-  if (!isNaN(latNum) && !isNaN(lngNum)) {
-    return `Coordinates (${latNum.toFixed(5)}, ${lngNum.toFixed(5)})`;
-  }
-
-  return 'Remote Location';
-};
-
 export default function Attendance() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -56,7 +45,7 @@ export default function Attendance() {
     try {
       const data = await getTodayAttendance();
       setAttendance(data);
-      setSummaryDraft(data.activeSession?.summary_text || '');
+      setSummaryDraft(data.activeSession?.summaryText || '');
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Unable to load attendance');
     } finally {
@@ -66,20 +55,20 @@ export default function Attendance() {
 
   const getActiveElapsedSeconds = () => {
     if (!attendance.activeSession) return 0;
-    const inMs = new Date(attendance.activeSession.punch_in_at).getTime();
+    const inMs = new Date(attendance.activeSession.punchInAt).getTime();
     const running = Math.max(0, Math.floor((now.getTime() - inMs) / 1000));
 
-    const paused = attendance.activeSession.total_break_seconds || 0;
-    const activeBreak = attendance.activeSession.break_started_at
-      ? Math.max(0, Math.floor((now.getTime() - new Date(attendance.activeSession.break_started_at).getTime()) / 1000))
+    const paused = attendance.activeSession.totalBreakSeconds || 0;
+    const activeBreak = attendance.activeSession.breakStartedAt
+      ? Math.max(0, Math.floor((now.getTime() - new Date(attendance.activeSession.breakStartedAt).getTime()) / 1000))
       : 0;
 
     return Math.max(0, running - paused - activeBreak);
   };
 
   const getBreakElapsedSeconds = () => {
-    if (!attendance.activeSession || !attendance.activeSession.break_started_at) return 0;
-    const breakStartedMs = new Date(attendance.activeSession.break_started_at).getTime();
+    if (!attendance.activeSession || !attendance.activeSession.breakStartedAt) return 0;
+    const breakStartedMs = new Date(attendance.activeSession.breakStartedAt).getTime();
     return Math.max(0, Math.floor((now.getTime() - breakStartedMs) / 1000));
   };
 
@@ -92,7 +81,7 @@ export default function Attendance() {
   };
 
   const handleBreakToggle = async () => {
-    if (attendance.activeSession?.break_started_at) {
+    if (attendance.activeSession?.breakStartedAt) {
       await handleEndBreak();
     } else {
       await handleStartBreak();
@@ -103,27 +92,11 @@ export default function Attendance() {
     setError('');
     setSuccess('');
     setLocationError('');
-    let latitude: number | null = null;
-    let longitude: number | null = null;
-    let locationName = 'Remote';
-
-    if (navigator.geolocation) {
-      try {
-        const position = await new Promise<GeolocationPosition>((resolve, reject) => {
-          navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 12000 });
-        });
-        latitude = position.coords.latitude;
-        longitude = position.coords.longitude;
-        locationName = 'Current Location';
-      } catch (err: unknown) {
-        setLocationError('Geolocation unavailable or denied. Logging with remote location.');
-      }
-    } else {
-      setLocationError('Geolocation not supported by browser.');
-    }
+    // Always use 'Remote' as location - no geolocation fetching
+    const locationName = 'Remote';
 
     try {
-      await punchIn({ latitude, longitude, locationName, summaryText: summaryDraft });
+      await punchIn({ latitude: null, longitude: null, locationName, summaryText: summaryDraft });
       setSuccess('Punched in successfully.');
       await fetchAttendance();
     } catch (err: unknown) {
@@ -230,14 +203,14 @@ export default function Attendance() {
             disabled={!attendance.activeSession}
             style={s.secondaryBtn}
           >
-            {attendance.activeSession?.break_started_at ? 'End Break' : 'Start Break'}
+            {attendance.activeSession?.breakStartedAt ? 'End Break' : 'Start Break'}
           </button>
         </div>
 
         {attendance.activeSession && (
           <div style={s.liveRow}>
             <div>Current session time: <b>{secondsToHuman(activeSeconds)}</b></div>
-            {attendance.activeSession.break_started_at && (
+            {attendance.activeSession.breakStartedAt && (
               <div>Current break: <b>{secondsToHuman(breakSeconds)}</b></div>
             )}
           </div>
@@ -283,12 +256,12 @@ export default function Attendance() {
               {attendance.sessions.map((sess) => (
                 <tr key={sess.id} style={{ background: sess.id === attendance.activeSession?.id ? '#f8fbff' : 'transparent' }}>
                   <td>{sess.id.slice(0, 8)}</td>
-                  <td>{new Date(sess.punch_in_at).toLocaleTimeString()}</td>
-                  <td>{sess.punch_out_at ? new Date(sess.punch_out_at).toLocaleTimeString() : 'Active'}</td>
-                  <td>{sess.duration_seconds !== null ? secondsToHuman(sess.duration_seconds) : '--'}</td>
-                  <td>{secondsToHuman(sess.total_break_seconds || 0)}{sess.break_started_at ? ' (ongoing)' : ''}</td>
-                  <td>{sess.location_name}</td>
-                  <td>{sess.summary_text || '—'}</td>
+                  <td>{sess.punchInAt ? new Date(sess.punchInAt).toLocaleTimeString() : '—'}</td>
+                  <td>{sess.punchOutAt ? new Date(sess.punchOutAt).toLocaleTimeString() : 'Active'}</td>
+                  <td>{sess.durationSeconds !== null && sess.durationSeconds !== undefined ? secondsToHuman(sess.durationSeconds) : '—'}</td>
+                  <td>{secondsToHuman(sess.totalBreakSeconds || 0)}{sess.breakStartedAt ? ' (ongoing)' : ''}</td>
+                  <td>{sess.locationName || 'Remote'}</td>
+                  <td>{sess.summaryText || '—'}</td>
                 </tr>
               ))}
             </tbody>
@@ -299,12 +272,12 @@ export default function Attendance() {
   );
 }
 
-const s: Record<string, React.CSSProperties> = {
-  root: { display: 'flex', flexDirection: 'column', gap: 16 },
-  title: { fontFamily: "'Syne',sans-serif", fontWeight: 700, fontSize: 20 },
-  sub: { color: '#64748b', marginBottom: 8 },
-  card: { padding: 14, borderRadius: 12, background: '#fff', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', gap: 12 },
-  statsRow: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 },
+const s: Record<string, React.CSSPropertieInAt).toLocaleTimeString()}</td>
+                  <td>{sess.punchOutAt ? new Date(sess.punchOutAt).toLocaleTimeString() : 'Active'}</td>
+                  <td>{sess.durationSeconds !== null && sess.durationSeconds !== undefined ? secondsToHuman(sess.durationSeconds) : '--'}</td>
+                  <td>{secondsToHuman(sess.totalBreakSeconds || 0)}{sess.breakStartedAt ? ' (ongoing)' : ''}</td>
+                  <td>{sess.locationName || 'Remote'}</td>
+                  <td>{sess.summaryTmplateColumns: 'repeat(3, 1fr)', gap: 12 },
   statItem: { background: '#f8fafc', borderRadius: 9, padding: 10 },
   statLabel: { color: '#64748b', fontSize: 12, marginBottom: 4 },
   statValue: { fontWeight: 700, fontSize: 16 },

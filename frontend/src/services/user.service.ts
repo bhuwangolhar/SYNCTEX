@@ -26,7 +26,7 @@ export interface OrgUser {
   email: string;
   mobile: string | null;
   role: 'ADMIN' | 'EMPLOYEE';
-  organization_id: string;
+  organizationId: string;
   createdAt: string;
 }
 

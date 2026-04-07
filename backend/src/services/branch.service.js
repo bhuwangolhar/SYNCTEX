@@ -248,7 +248,7 @@ exports.createDefaultHomeBranch = async ({ organizationId, createdBy, ownerId = 
     return await exports.createBranch(
       {
         branchCode: defaultCode,
-        name: `${orgName} Head Office`,
+        name: `Head Office`,
         branchType: 'HEAD_OFFICE',
         branchStatus: 'ACTIVE',
         addressLine1: 'Head Office',

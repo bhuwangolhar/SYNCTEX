@@ -12,28 +12,28 @@ function authHeaders() {
 
 export interface AttendanceDay {
   id: string;
-  organization_id: string;
-  user_id: string;
+  organizationId: string;
+  userId: string;
   date: string;
-  total_worked_seconds: number;
+  totalWorkedSeconds: number;
   status: 'OPEN' | 'CLOSED' | 'AUTO_CLOSED';
-  auto_closed_at: string | null;
+  autoClosedAt: string | null;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface AttendanceSession {
   id: string;
-  attendance_day_id: string;
-  punch_in_at: string;
-  punch_out_at: string | null;
-  duration_seconds: number | null;
-  break_started_at: string | null;
-  total_break_seconds: number;
+  attendanceDayId: string;
+  punchInAt: string;
+  punchOutAt: string | null;
+  durationSeconds: number | null;
+  breakStartedAt: string | null;
+  totalBreakSeconds: number;
   latitude: number | null;
   longitude: number | null;
-  location_name: string;
-  summary_text: string | null;
+  locationName: string;
+  summaryText: string | null;
   createdAt: string;
   updatedAt: string;
 }

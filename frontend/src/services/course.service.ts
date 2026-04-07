@@ -29,21 +29,21 @@ export interface CoursePayload {
 
 export interface Course {
   id: string;
-  organization_id: string;
-  course_code: string;
-  course_name: string;
-  course_slug: string;
+  organizationId: string;
+  courseCode: string;
+  courseName: string;
+  courseSlug: string;
   description: string | null;
-  delivery_mode: string;
-  course_type: string | null;
-  course_status: string;
-  selling_price: number | null;
-  discounted_price: number | null;
-  gst_percentage: number;
-  fee_plan: string | null;
+  deliveryMode: string;
+  courseType: string | null;
+  courseStatus: string;
+  sellingPrice: number | null;
+  discountedPrice: number | null;
+  gstPercentage: number;
+  feePlan: string | null;
   language: string;
-  show_on_homepage: boolean;
-  created_by: string;
+  showOnHomepage: boolean;
+  createdBy: string;
   createdAt: string;
   updatedAt: string;
   creator?: { id: string; name: string };

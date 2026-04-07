@@ -110,19 +110,19 @@ export default function Courses() {
   const handleEdit = (course: Course) => {
     setEditingCourse(course);
     setForm({
-      courseCode: course.course_code,
-      courseName: course.course_name,
-      courseSlug: course.course_slug,
+      courseCode: course.courseCode,
+      courseName: course.courseName,
+      courseSlug: course.courseSlug,
       description: course.description || '',
-      deliveryMode: (course.delivery_mode as any) || 'online',
-      courseType: course.course_type || '',
-      courseStatus: (course.course_status as any) || 'draft',
-      sellingPrice: course.selling_price,
-      discountedPrice: course.discounted_price,
-      gstPercentage: course.gst_percentage,
-      feePlan: course.fee_plan || '',
+      deliveryMode: (course.deliveryMode as any) || 'online',
+      courseType: course.courseType || '',
+      courseStatus: (course.courseStatus as any) || 'draft',
+      sellingPrice: course.sellingPrice,
+      discountedPrice: course.discountedPrice,
+      gstPercentage: course.gstPercentage,
+      feePlan: course.feePlan || '',
       language: course.language,
-      showOnHomepage: course.show_on_homepage
+      showOnHomepage: course.showOnHomepage
     });
     setShowModal(true);
   };
@@ -280,37 +280,37 @@ export default function Courses() {
                 <tr key={course.id} className="course-row" style={s.tr}>
                   <td style={s.td}>
                     <div style={s.courseNameCol}>
-                      <div style={s.courseName}>{course.course_name || 'Unnamed Course'}</div>
-                      <div style={s.courseCode}>{course.course_code || '—'}</div>
+                      <div style={s.courseName}>{course.courseName || 'Unnamed Course'}</div>
+                      <div style={s.courseCode}>{course.courseCode || '—'}</div>
                       {course.description && (
                         <div style={s.courseDesc}>{course.description.substring(0, 60)}...</div>
                       )}
                     </div>
                   </td>
-                  <td style={s.td}>{course.delivery_mode ? (course.delivery_mode.charAt(0).toUpperCase() + course.delivery_mode.slice(1)) : '—'}</td>
+                  <td style={s.td}>{course.deliveryMode ? (course.deliveryMode.charAt(0).toUpperCase() + course.deliveryMode.slice(1)) : '—'}</td>
                   <td style={s.td}>
                     <div style={s.priceCol}>
-                      <div style={s.sellingPrice}>{formatPrice(course.selling_price)}</div>
-                      {course.discounted_price && (
-                        <div style={s.discountedPrice}>{formatPrice(course.discounted_price)}</div>
+                      <div style={s.sellingPrice}>{formatPrice(course.sellingPrice)}</div>
+                      {course.discountedPrice && (
+                        <div style={s.discountedPrice}>{formatPrice(course.discountedPrice)}</div>
                       )}
                     </div>
                   </td>
                   <td style={s.td}>
                     <span style={{
                       ...s.statusBadge,
-                      background: course.course_status === 'active' 
+                      background: course.courseStatus === 'active' 
                         ? 'rgba(16,185,129,0.1)' 
-                        : course.course_status === 'draft' 
+                        : course.courseStatus === 'draft' 
                         ? 'rgba(245,158,11,0.1)' 
                         : 'rgba(239,68,68,0.1)',
-                      color: course.course_status === 'active' 
+                      color: course.courseStatus === 'active' 
                         ? '#059669' 
-                        : course.course_status === 'draft' 
+                        : course.courseStatus === 'draft' 
                         ? '#d97706' 
                         : '#dc2626'
                     }}>
-                      {course.course_status ? (course.course_status.charAt(0).toUpperCase() + course.course_status.slice(1)) : '—'}
+                      {course.courseStatus ? (course.courseStatus.charAt(0).toUpperCase() + course.courseStatus.slice(1)) : '—'}
                     </span>
                   </td>
                   <td style={{ ...s.td, ...s.actionsTd }}>

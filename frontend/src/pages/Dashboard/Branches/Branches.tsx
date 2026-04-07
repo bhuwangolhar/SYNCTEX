@@ -114,29 +114,29 @@ export default function Branches() {
   const handleEdit = (branch: Branch) => {
     setEditingBranch(branch);
     setForm({
-      branchCode: branch.branch_code,
+      branchCode: branch.branchCode,
       name: branch.name,
-      branchType: branch.branch_type as any,
-      branchStatus: branch.branch_status as any,
-      openingDate: branch.opening_date || '',
-      operationalSince: branch.operational_since || '',
-      addressLine1: branch.address_line1,
-      addressLine2: branch.address_line2 || '',
+      branchType: branch.branchType as any,
+      branchStatus: branch.branchStatus as any,
+      openingDate: branch.openingDate || '',
+      operationalSince: branch.operationalSince || '',
+      addressLine1: branch.addressLine1,
+      addressLine2: branch.addressLine2 || '',
       area: branch.area,
       city: branch.city,
       state: branch.state,
       country: branch.country,
       pincode: branch.pincode,
-      googleMapsLink: branch.google_maps_link || '',
+      googleMapsLink: branch.googleMapsLink || '',
       latitude: branch.latitude,
       longitude: branch.longitude,
       phone: branch.phone,
       email: branch.email,
-      branchOwnerId: branch.branch_owner_id,
-      gstRegistered: branch.gst_registered,
-      gstinNumber: branch.gstin_number || '',
-      placeOfSupply: branch.place_of_supply || '',
-      stateCode: branch.state_code || ''
+      branchOwnerId: branch.branchOwnerId,
+      gstRegistered: branch.gstRegistered,
+      gstinNumber: branch.gstinNumber || '',
+      placeOfSupply: branch.placeOfSupply || '',
+      stateCode: branch.stateCode || ''
     });
     setShowModal(true);
   };
@@ -221,20 +221,20 @@ export default function Branches() {
             <tbody>
               {branches.map((b) => (
                 <tr key={b.id} className="branch-row" style={s.tr}>
-                  <td style={s.td}>{b.branch_code}</td>
-                  <td style={s.td}>{b.name}</td>
-                  <td style={s.td}>{(b.branch_type || '').replace('_', ' ')}</td>
+                  <td style={s.td}>{b.branchCode || '—'}</td>
+                  <td style={s.td}>{b.name || 'Unnamed Branch'}</td>
+                  <td style={s.td}>{((b.branchType || '') ? (b.branchType || '').replace('_', ' ') : '—')}</td>
                   <td style={s.td}>
                     <span style={{
                       ...s.statusBadge,
-                      background: b.branch_status === 'ACTIVE' ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)',
-                      color: b.branch_status === 'ACTIVE' ? '#059669' : '#dc2626'
+                      background: b.branchStatus === 'ACTIVE' ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)',
+                      color: b.branchStatus === 'ACTIVE' ? '#059669' : '#dc2626'
                     }}>
-                      {(b.branch_status || '').replace('_', ' ')}
+                      {((b.branchStatus || '') ? (b.branchStatus || '').replace('_', ' ') : '—')}
                     </span>
                   </td>
                   <td style={s.td}>{b.owner?.name || '—'}</td>
-                  <td style={s.td}>{`${b.area}, ${b.city}`}</td>
+                  <td style={s.td}>{`${b.area || 'N/A'}, ${b.city || 'N/A'}`}</td>
                   <td style={s.td}>
                     <button onClick={() => handleEdit(b)} style={s.editBtn}>Edit</button>
                     <button onClick={() => handleDelete(b.id)} style={s.deleteBtn}>Delete</button>

@@ -12,7 +12,7 @@ function authHeaders() {
 
 export interface Department {
   id: string;
-  organization_id: string;
+  organizationId: string;
   name: string;
   code?: string;
   description?: string;

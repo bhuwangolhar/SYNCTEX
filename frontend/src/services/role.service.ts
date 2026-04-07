@@ -12,7 +12,7 @@ function authHeaders() {
 
 export interface Role {
   id: string;
-  organization_id: string;
+  organizationId: string;
   name: string;
   code?: string;
   description?: string;

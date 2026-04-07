@@ -91,15 +91,15 @@ export default function Employees() {
 
   const openEdit = (emp: Employee) => {
     setForm({
-      employeeId: emp.employee_id,
-      firstName: emp.first_name,
-      lastName: emp.last_name || '',
+      employeeId: emp.employeeId,
+      firstName: emp.firstName,
+      lastName: emp.lastName || '',
       email: emp.email,
       phone: emp.phone || '',
       department: emp.department || '',
       role: emp.role || '',
       status: emp.status as 'active' | 'inactive' | 'on_leave',
-      dateOfJoining: emp.date_of_joining || ''
+      dateOfJoining: emp.dateOfJoining || ''
     });
     setEditingEmployee(emp);
     setIsEditing(true);
@@ -302,8 +302,8 @@ export default function Employees() {
                 ) : (
                   employees.map(e => (
                     <tr key={e.id} className="hr-row" style={s.tr}>
-                      <td style={s.td}>{e.employee_id}</td>
-                      <td style={s.td}>{e.first_name} {e.last_name || ''}</td>
+                      <td style={s.td}>{e.employeeId}</td>
+                      <td style={s.td}>{e.firstName} {e.lastName || ''}</td>
                       <td style={s.td}>{e.email}</td>
                       <td style={s.td}>{e.department || '—'}</td>
                       <td style={s.td}>{e.role || '—'}</td>
