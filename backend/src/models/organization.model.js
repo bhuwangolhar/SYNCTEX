@@ -15,23 +15,28 @@ const Organization = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false
     },
-    founder_name: {
+    founderName: {
       type: DataTypes.STRING,
-      allowNull: true
+      allowNull: true,
+      field: 'founder_name'
     },
-    contact_info: {
+    contactInfo: {
       type: DataTypes.JSON,
       allowNull: true,
-      defaultValue: {}
+      defaultValue: {},
+      field: 'contact_info'
     },
-    tax_info: {
+    taxInfo: {
       type: DataTypes.JSON,
       allowNull: true,
-      defaultValue: {}
+      defaultValue: {},
+      field: 'tax_info'
     }
   },
   {
-    tableName: "organizations"
+    tableName: "organizations",
+    underscored: true,
+    timestamps: true
   }
 );
 

@@ -9,9 +9,10 @@ const Role = sequelize.define('Role', {
     defaultValue: DataTypes.UUIDV4,
     primaryKey: true
   },
-  organization_id: {
+  organizationId: {
     type: DataTypes.UUID,
-    allowNull: false
+    allowNull: false,
+    field: 'organization_id'
   },
   name: {
     type: DataTypes.STRING(100),

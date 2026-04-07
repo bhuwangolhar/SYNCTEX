@@ -11,41 +11,47 @@ const AttendanceDay = sequelize.define(
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true
     },
-    organization_id: {
+    organizationId: {
       type: DataTypes.UUID,
-      allowNull: false
+      allowNull: false,
+      field: 'organization_id'
     },
-    user_id: {
+    userId: {
       type: DataTypes.UUID,
-      allowNull: false
+      allowNull: false,
+      field: 'user_id'
     },
     date: {
       type: DataTypes.DATEONLY,
       allowNull: false
     },
-    total_worked_seconds: {
+    totalWorkedSeconds: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      defaultValue: 0
+      defaultValue: 0,
+      field: 'total_worked_seconds'
     },
     status: {
       type: DataTypes.ENUM('OPEN', 'CLOSED', 'AUTO_CLOSED'),
       allowNull: false,
       defaultValue: 'OPEN'
     },
-    auto_closed_at: {
+    autoClosedAt: {
       type: DataTypes.DATE,
-      allowNull: true
+      allowNull: true,
+      field: 'auto_closed_at'
     }
   },
   {
-    tableName: 'attendance_days'
+    tableName: 'attendance_days',
+    underscored: true,
+    timestamps: true
   }
 );
 
 AttendanceDay.associate = (models) => {
   AttendanceDay.hasMany(models.AttendanceSession, {
-    foreignKey: 'attendance_day_id'
+    foreignKey: 'attendanceDayId'
   });
 };
 

@@ -11,44 +11,52 @@ const Branch = sequelize.define(
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true
     },
-    organization_id: {
+    organizationId: {
       type: DataTypes.UUID,
-      allowNull: false
+      allowNull: false,
+      field: 'organization_id'
     },
-    branch_code: {
+    branchCode: {
       type: DataTypes.STRING(8),
       allowNull: false,
-      unique: true
+      unique: true,
+      field: 'branch_code'
     },
     name: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    branch_type: {
+    branchType: {
       type: DataTypes.ENUM('HEAD_OFFICE', 'BRANCH_OFFICE', 'WAREHOUSE', 'RETAIL_OUTLET'),
       allowNull: false,
-      defaultValue: 'BRANCH_OFFICE'
+      defaultValue: 'BRANCH_OFFICE',
+      field: 'branch_type'
     },
-    branch_status: {
+    branchStatus: {
       type: DataTypes.ENUM('ACTIVE', 'TEMPORARILY_CLOSED', 'PERMANENTLY_CLOSED'),
       allowNull: false,
-      defaultValue: 'ACTIVE'
+      defaultValue: 'ACTIVE',
+      field: 'branch_status'
     },
-    opening_date: {
+    openingDate: {
       type: DataTypes.DATEONLY,
-      allowNull: true
+      allowNull: true,
+      field: 'opening_date'
     },
-    operational_since: {
+    operationalSince: {
       type: DataTypes.DATEONLY,
-      allowNull: true
+      allowNull: true,
+      field: 'operational_since'
     },
-    address_line1: {
+    addressLine1: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
+      field: 'address_line1'
     },
-    address_line2: {
+    addressLine2: {
       type: DataTypes.STRING,
-      allowNull: true
+      allowNull: true,
+      field: 'address_line2'
     },
     area: {
       type: DataTypes.STRING,
@@ -71,9 +79,10 @@ const Branch = sequelize.define(
       type: DataTypes.STRING(6),
       allowNull: false
     },
-    google_maps_link: {
+    googleMapsLink: {
       type: DataTypes.TEXT,
-      allowNull: true
+      allowNull: true,
+      field: 'google_maps_link'
     },
     latitude: {
       type: DataTypes.DECIMAL(10, 7),
@@ -94,41 +103,49 @@ const Branch = sequelize.define(
       allowNull: false,
       validate: { isEmail: true }
     },
-    branch_owner_id: {
+    branchOwnerId: {
       type: DataTypes.UUID,
-      allowNull: true
+      allowNull: true,
+      field: 'branch_owner_id'
     },
-    gst_registered: {
+    gstRegistered: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: false
+      defaultValue: false,
+      field: 'gst_registered'
     },
-    gstin_number: {
+    gstinNumber: {
       type: DataTypes.STRING(15),
-      allowNull: true
+      allowNull: true,
+      field: 'gstin_number'
     },
-    place_of_supply: {
+    placeOfSupply: {
       type: DataTypes.STRING,
-      allowNull: true
+      allowNull: true,
+      field: 'place_of_supply'
     },
-    state_code: {
+    stateCode: {
       type: DataTypes.STRING(2),
-      allowNull: true
+      allowNull: true,
+      field: 'state_code'
     },
-    created_by: {
+    createdBy: {
       type: DataTypes.UUID,
-      allowNull: false
+      allowNull: false,
+      field: 'created_by'
     }
   },
   {
-    tableName: 'branches'
+    tableName: 'branches',
+    underscored: true,
+    timestamps: true
   }
 );
 
 Branch.associate = (models) => {
   if (models.User) {
-    Branch.belongsTo(models.User, { foreignKey: 'branch_owner_id', as: 'owner' });
-    Branch.belongsTo(models.User, { foreignKey: 'created_by', as: 'creator' });
+    Branch.belongsTo(models.User, { foreignKey: 'branchOwnerId', as: 'owner' });
+    Branch.belongsTo(models.User, { foreignKey: 'createdBy', as: 'creator' });
   }
 };
 

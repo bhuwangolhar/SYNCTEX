@@ -9,75 +9,88 @@ const Course = sequelize.define('Course', {
     defaultValue: DataTypes.UUIDV4,
     primaryKey: true
   },
-  organization_id: {
+  organizationId: {
     type: DataTypes.UUID,
-    allowNull: false
+    allowNull: false,
+    field: 'organization_id'
   },
-  course_code: {
+  courseCode: {
     type: DataTypes.STRING(50),
     allowNull: false,
     unique: true,
-    validate: { notEmpty: true }
+    validate: { notEmpty: true },
+    field: 'course_code'
   },
-  course_name: {
+  courseName: {
     type: DataTypes.STRING(255),
     allowNull: false,
-    validate: { notEmpty: true }
+    validate: { notEmpty: true },
+    field: 'course_name'
   },
-  course_slug: {
+  courseSlug: {
     type: DataTypes.STRING(255),
     allowNull: false,
     unique: true,
-    validate: { notEmpty: true }
+    validate: { notEmpty: true },
+    field: 'course_slug'
   },
   description: {
     type: DataTypes.TEXT,
     allowNull: true
   },
-  delivery_mode: {
+  deliveryMode: {
     type: DataTypes.ENUM('online', 'offline', 'hybrid'),
-    defaultValue: 'online'
+    defaultValue: 'online',
+    field: 'delivery_mode'
   },
-  course_type: {
+  courseType: {
     type: DataTypes.STRING(100),
-    allowNull: true
+    allowNull: true,
+    field: 'course_type'
   },
-  course_status: {
+  courseStatus: {
     type: DataTypes.ENUM('draft', 'active', 'archived'),
-    defaultValue: 'draft'
+    defaultValue: 'draft',
+    field: 'course_status'
   },
-  selling_price: {
+  sellingPrice: {
     type: DataTypes.DECIMAL(10, 2),
-    allowNull: true
+    allowNull: true,
+    field: 'selling_price'
   },
-  discounted_price: {
+  discountedPrice: {
     type: DataTypes.DECIMAL(10, 2),
-    allowNull: true
+    allowNull: true,
+    field: 'discounted_price'
   },
-  gst_percentage: {
+  gstPercentage: {
     type: DataTypes.DECIMAL(5, 2),
-    defaultValue: 18.00
+    defaultValue: 18.00,
+    field: 'gst_percentage'
   },
-  fee_plan: {
+  feePlan: {
     type: DataTypes.STRING(100),
-    allowNull: true
+    allowNull: true,
+    field: 'fee_plan'
   },
   language: {
     type: DataTypes.STRING(50),
     defaultValue: 'English'
   },
-  show_on_homepage: {
+  showOnHomepage: {
     type: DataTypes.BOOLEAN,
-    defaultValue: false
+    defaultValue: false,
+    field: 'show_on_homepage'
   },
-  created_by: {
+  createdBy: {
     type: DataTypes.UUID,
-    allowNull: true
+    allowNull: true,
+    field: 'created_by'
   }
 }, {
   tableName: 'courses',
-  timestamps: true,
-  underscored: true
+  underscored: true,
+  timestamps: true
 });
 
 module.exports = Course;

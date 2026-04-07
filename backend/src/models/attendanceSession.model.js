@@ -11,30 +11,36 @@ const AttendanceSession = sequelize.define(
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true
     },
-    attendance_day_id: {
+    attendanceDayId: {
       type: DataTypes.UUID,
-      allowNull: false
+      allowNull: false,
+      field: 'attendance_day_id'
     },
-    punch_in_at: {
+    punchInAt: {
       type: DataTypes.DATE,
-      allowNull: false
+      allowNull: false,
+      field: 'punch_in_at'
     },
-    punch_out_at: {
+    punchOutAt: {
       type: DataTypes.DATE,
-      allowNull: true
+      allowNull: true,
+      field: 'punch_out_at'
     },
-    duration_seconds: {
+    durationSeconds: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: true,
+      field: 'duration_seconds'
     },
-    break_started_at: {
+    breakStartedAt: {
       type: DataTypes.DATE,
-      allowNull: true
+      allowNull: true,
+      field: 'break_started_at'
     },
-    total_break_seconds: {
+    totalBreakSeconds: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      defaultValue: 0
+      defaultValue: 0,
+      field: 'total_break_seconds'
     },
     latitude: {
       type: DataTypes.DECIMAL(10, 7),
@@ -44,24 +50,28 @@ const AttendanceSession = sequelize.define(
       type: DataTypes.DECIMAL(10, 7),
       allowNull: true
     },
-    location_name: {
+    locationName: {
       type: DataTypes.STRING,
       allowNull: false,
-      defaultValue: 'Remote'
+      defaultValue: 'Remote',
+      field: 'location_name'
     },
-    summary_text: {
+    summaryText: {
       type: DataTypes.TEXT,
-      allowNull: true
+      allowNull: true,
+      field: 'summary_text'
     }
   },
   {
-    tableName: 'attendance_sessions'
+    tableName: 'attendance_sessions',
+    underscored: true,
+    timestamps: true
   }
 );
 
 AttendanceSession.associate = (models) => {
   AttendanceSession.belongsTo(models.AttendanceDay, {
-    foreignKey: 'attendance_day_id'
+    foreignKey: 'attendanceDayId'
   });
 };
 

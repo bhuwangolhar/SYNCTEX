@@ -14,9 +14,10 @@ const User = sequelize.define(
       primaryKey: true
     },
 
-    organization_id: {
+    organizationId: {
       type: DataTypes.UUID,
-      allowNull: false
+      allowNull: false,
+      field: 'organization_id'
     },
 
     name: {
@@ -46,7 +47,9 @@ const User = sequelize.define(
     }
   },
   {
-    tableName: 'users'
+    tableName: 'users',
+    underscored: true,
+    timestamps: true
   }
 );
 

@@ -11,26 +11,31 @@ const Employee = sequelize.define(
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true
     },
-    organization_id: {
+    organizationId: {
       type: DataTypes.UUID,
-      allowNull: false
+      allowNull: false,
+      field: 'organization_id'
     },
-    user_id: {
+    userId: {
       type: DataTypes.UUID,
-      allowNull: true
+      allowNull: true,
+      field: 'user_id'
     },
-    employee_id: {
+    employeeId: {
       type: DataTypes.STRING(50),
       allowNull: false,
-      unique: true
+      unique: true,
+      field: 'employee_id'
     },
-    first_name: {
+    firstName: {
       type: DataTypes.STRING(100),
-      allowNull: false
+      allowNull: false,
+      field: 'first_name'
     },
-    last_name: {
+    lastName: {
       type: DataTypes.STRING(100),
-      allowNull: true
+      allowNull: true,
+      field: 'last_name'
     },
     email: {
       type: DataTypes.STRING(150),
@@ -52,25 +57,28 @@ const Employee = sequelize.define(
       type: DataTypes.ENUM('active', 'inactive', 'on_leave'),
       defaultValue: 'active'
     },
-    date_of_joining: {
+    dateOfJoining: {
       type: DataTypes.DATEONLY,
-      allowNull: true
+      allowNull: true,
+      field: 'date_of_joining'
     },
-    created_by: {
+    createdBy: {
       type: DataTypes.UUID,
-      allowNull: true
+      allowNull: true,
+      field: 'created_by'
     }
   },
   {
     tableName: 'employees',
-    underscored: true
+    underscored: true,
+    timestamps: true
   }
 );
 
 Employee.associate = (models) => {
   if (models.User) {
-    Employee.belongsTo(models.User, { foreignKey: 'user_id', as: 'user' });
-    Employee.belongsTo(models.User, { foreignKey: 'created_by', as: 'creator' });
+    Employee.belongsTo(models.User, { foreignKey: 'userId', as: 'user' });
+    Employee.belongsTo(models.User, { foreignKey: 'createdBy', as: 'creator' });
   }
 };
 

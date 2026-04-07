@@ -11,17 +11,20 @@ const Task = sequelize.define(
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true
     },
-    organization_id: {
+    organizationId: {
       type: DataTypes.UUID,
-      allowNull: false
+      allowNull: false,
+      field: 'organization_id'
     },
-    assigned_to: {
+    assignedTo: {
       type: DataTypes.UUID,
-      allowNull: true
+      allowNull: true,
+      field: 'assigned_to'
     },
-    created_by: {
+    createdBy: {
       type: DataTypes.UUID,
-      allowNull: true
+      allowNull: true,
+      field: 'created_by'
     },
     title: {
       type: DataTypes.STRING,
@@ -38,12 +41,15 @@ const Task = sequelize.define(
       type: DataTypes.ENUM("LOW", "MEDIUM", "HIGH"),
       defaultValue: "MEDIUM"
     },
-    due_date: {
-      type: DataTypes.DATEONLY
+    dueDate: {
+      type: DataTypes.DATEONLY,
+      field: 'due_date'
     }
   },
   {
-    tableName: "tasks"
+    tableName: "tasks",
+    underscored: true,
+    timestamps: true
   }
 );
 
