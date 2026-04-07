@@ -34,15 +34,20 @@ exports.updateOrganization = async (organizationId, updateData) => {
   }
 
   // Only update allowed fields
+  // Handle both snake_case (from some sources) and camelCase (from frontend)
   if (updateData.name !== undefined) {
     organization.name = updateData.name;
   }
   
-  if (updateData.founderName !== undefined) {
+  if (updateData.founder_name !== undefined) {
+    organization.founderName = updateData.founder_name;
+  } else if (updateData.founderName !== undefined) {
     organization.founderName = updateData.founderName;
   }
   
-  if (updateData.contactInfo !== undefined) {
+  if (updateData.contact_info !== undefined) {
+    organization.contactInfo = updateData.contact_info;
+  } else if (updateData.contactInfo !== undefined) {
     organization.contactInfo = updateData.contactInfo;
   }
   
@@ -50,7 +55,9 @@ exports.updateOrganization = async (organizationId, updateData) => {
     organization.logo = updateData.logo;
   }
   
-  if (updateData.taxInfo !== undefined) {
+  if (updateData.tax_info !== undefined) {
+    organization.taxInfo = updateData.tax_info;
+  } else if (updateData.taxInfo !== undefined) {
     organization.taxInfo = updateData.taxInfo;
   }
 

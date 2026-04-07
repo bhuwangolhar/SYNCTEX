@@ -29,14 +29,26 @@ exports.getOrganization = async (req, res) => {
 exports.updateOrganization = async (req, res) => {
   try {
     const { organizationId } = req.params;
-    const { name, founder_name, contactInfo, logo, taxInfo } = req.body;
-
-    const organization = await organizationService.updateOrganization(organizationId, {
+    
+    // Extract both snake_case and camelCase formats (handle both from different sources)
+    const {
       name,
       founder_name,
+      founderName,
+      contact_info,
       contactInfo,
       logo,
+      tax_info,
       taxInfo
+    } = req.body;
+
+    // Pass to service with consistent camelCase keys
+    const organization = await organizationService.updateOrganization(organizationId, {
+      name,
+      founder_name: founder_name || founderName,
+      contactInfo: contact_info || contactInfo,
+      logo,
+      taxInfo: tax_info || taxInfo
     });
 
     res.json({ message: 'Organization updated successfully', organization });

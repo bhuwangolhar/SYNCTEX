@@ -223,14 +223,14 @@ export default function Branches() {
                 <tr key={b.id} className="branch-row" style={s.tr}>
                   <td style={s.td}>{b.branch_code}</td>
                   <td style={s.td}>{b.name}</td>
-                  <td style={s.td}>{b.branch_type.replace('_', ' ')}</td>
+                  <td style={s.td}>{(b.branch_type || '').replace('_', ' ')}</td>
                   <td style={s.td}>
                     <span style={{
                       ...s.statusBadge,
                       background: b.branch_status === 'ACTIVE' ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)',
                       color: b.branch_status === 'ACTIVE' ? '#059669' : '#dc2626'
                     }}>
-                      {b.branch_status.replace('_', ' ')}
+                      {(b.branch_status || '').replace('_', ' ')}
                     </span>
                   </td>
                   <td style={s.td}>{b.owner?.name || '—'}</td>

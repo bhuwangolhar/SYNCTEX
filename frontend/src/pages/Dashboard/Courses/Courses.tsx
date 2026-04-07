@@ -280,14 +280,14 @@ export default function Courses() {
                 <tr key={course.id} className="course-row" style={s.tr}>
                   <td style={s.td}>
                     <div style={s.courseNameCol}>
-                      <div style={s.courseName}>{course.course_name}</div>
-                      <div style={s.courseCode}>{course.course_code}</div>
+                      <div style={s.courseName}>{course.course_name || 'Unnamed Course'}</div>
+                      <div style={s.courseCode}>{course.course_code || '—'}</div>
                       {course.description && (
                         <div style={s.courseDesc}>{course.description.substring(0, 60)}...</div>
                       )}
                     </div>
                   </td>
-                  <td style={s.td}>{course.delivery_mode.charAt(0).toUpperCase() + course.delivery_mode.slice(1)}</td>
+                  <td style={s.td}>{course.delivery_mode ? (course.delivery_mode.charAt(0).toUpperCase() + course.delivery_mode.slice(1)) : '—'}</td>
                   <td style={s.td}>
                     <div style={s.priceCol}>
                       <div style={s.sellingPrice}>{formatPrice(course.selling_price)}</div>
@@ -310,7 +310,7 @@ export default function Courses() {
                         ? '#d97706' 
                         : '#dc2626'
                     }}>
-                      {course.course_status.charAt(0).toUpperCase() + course.course_status.slice(1)}
+                      {course.course_status ? (course.course_status.charAt(0).toUpperCase() + course.course_status.slice(1)) : '—'}
                     </span>
                   </td>
                   <td style={{ ...s.td, ...s.actionsTd }}>
