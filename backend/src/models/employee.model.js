@@ -66,6 +66,16 @@ const Employee = sequelize.define(
       type: DataTypes.UUID,
       allowNull: true,
       field: 'created_by'
+    },
+
+    createdAt: {
+      type: DataTypes.DATE,
+      field: 'createdAt'
+    },
+
+    updatedAt: {
+      type: DataTypes.DATE,
+      field: 'updatedAt'
     }
   },
   {

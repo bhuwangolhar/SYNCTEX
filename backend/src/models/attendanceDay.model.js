@@ -40,6 +40,16 @@ const AttendanceDay = sequelize.define(
       type: DataTypes.DATE,
       allowNull: true,
       field: 'auto_closed_at'
+    },
+
+    createdAt: {
+      type: DataTypes.DATE,
+      field: 'createdAt'
+    },
+
+    updatedAt: {
+      type: DataTypes.DATE,
+      field: 'updatedAt'
     }
   },
   {

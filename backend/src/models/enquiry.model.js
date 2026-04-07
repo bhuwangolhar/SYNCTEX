@@ -24,6 +24,16 @@ const Enquiry = sequelize.define("Enquiry", {
   status: {
     type: DataTypes.ENUM("NEW","CONTACTED","CLOSED"),
     defaultValue: "NEW"
+  },
+
+  createdAt: {
+    type: DataTypes.DATE,
+    field: 'createdAt'
+  },
+
+  updatedAt: {
+    type: DataTypes.DATE,
+    field: 'updatedAt'
   }
 },{
   tableName: "enquiries",

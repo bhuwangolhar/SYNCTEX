@@ -44,6 +44,16 @@ const User = sequelize.define(
     role: {
       type: DataTypes.ENUM('ADMIN', 'EMPLOYEE'),
       defaultValue: 'EMPLOYEE'
+    },
+
+    createdAt: {
+      type: DataTypes.DATE,
+      field: 'createdAt'
+    },
+
+    updatedAt: {
+      type: DataTypes.DATE,
+      field: 'updatedAt'
     }
   },
   {

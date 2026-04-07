@@ -60,6 +60,16 @@ const AttendanceSession = sequelize.define(
       type: DataTypes.TEXT,
       allowNull: true,
       field: 'summary_text'
+    },
+
+    createdAt: {
+      type: DataTypes.DATE,
+      field: 'createdAt'
+    },
+
+    updatedAt: {
+      type: DataTypes.DATE,
+      field: 'updatedAt'
     }
   },
   {

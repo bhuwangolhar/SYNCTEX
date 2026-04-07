@@ -44,6 +44,16 @@ const Task = sequelize.define(
     dueDate: {
       type: DataTypes.DATEONLY,
       field: 'due_date'
+    },
+
+    createdAt: {
+      type: DataTypes.DATE,
+      field: 'createdAt'
+    },
+
+    updatedAt: {
+      type: DataTypes.DATE,
+      field: 'updatedAt'
     }
   },
   {

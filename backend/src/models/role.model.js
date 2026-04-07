@@ -25,6 +25,16 @@ const Role = sequelize.define('Role', {
   description: {
     type: DataTypes.TEXT,
     allowNull: true
+  },
+
+  createdAt: {
+    type: DataTypes.DATE,
+    field: 'createdAt'
+  },
+
+  updatedAt: {
+    type: DataTypes.DATE,
+    field: 'updatedAt'
   }
 }, {
   tableName: 'roles',

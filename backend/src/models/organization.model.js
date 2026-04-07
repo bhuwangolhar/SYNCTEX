@@ -31,6 +31,16 @@ const Organization = sequelize.define(
       allowNull: true,
       defaultValue: {},
       field: 'tax_info'
+    },
+
+    createdAt: {
+      type: DataTypes.DATE,
+      field: 'createdAt'
+    },
+
+    updatedAt: {
+      type: DataTypes.DATE,
+      field: 'updatedAt'
     }
   },
   {
