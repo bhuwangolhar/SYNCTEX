@@ -57,6 +57,10 @@ app.get('/', (req, res) => {
   res.send('SYNCTEX API running');
 });
 
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ status: 'ok' });
+});
+
 const PORT = process.env.PORT || 3000;
 const isProduction = process.env.NODE_ENV === 'production';
 
