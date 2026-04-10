@@ -2,24 +2,6 @@
 
 **A multi-tenant office management SaaS workspace built for integration and reliability.**
 
-<p align="center">
-  <img src="frontend/public/favicon.svg" alt="SYNCTEX Logo" width="88" />
-</p>
-
-<h1 align="center">SYNCTEX</h1>
-
-<p align="center">
-  <strong>A SaaS-based multi-tenant office management system for centralizing employee operations, task tracking, enquiries, attendance, courses, branches, and day-to-day organizational workflows.</strong>
-</p>
-
-<p align="center">
-  <img alt="Status" src="https://img.shields.io/badge/Status-Active%20Development-2563eb" />
-  <img alt="Frontend" src="https://img.shields.io/badge/Frontend-React%2019%20%2B%20TypeScript-61DAFB?logo=react&logoColor=white" />
-  <img alt="Backend" src="https://img.shields.io/badge/Backend-Express%205%20%2B%20Sequelize-000000?logo=express&logoColor=white" />
-  <img alt="Database" src="https://img.shields.io/badge/Database-PostgreSQL-336791?logo=postgresql&logoColor=white" />
-  <img alt="License" src="https://img.shields.io/badge/License-MIT-green.svg" />
-</p>
-
 ---
 
 ## Overview
